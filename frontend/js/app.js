@@ -4,6 +4,8 @@ import { renderMonthly } from './views/monthly.js';
 import { renderWeekly } from './views/weekly.js';
 import { renderDaily } from './views/daily.js';
 import { expandRecurrences } from './utils/recurrence.js';
+import { setupDragDrop } from './components/dragDrop.js';
+import { setupEventForm } from './components/eventForm.js';
 
 // Re-export API functions for use by other modules
 export { fetchEvents, fetchEvent, createEvent, updateEvent, deleteEvent, searchEvents };
@@ -191,16 +193,11 @@ document.addEventListener('DOMContentLoaded', () => {
         loadEvents();
     });
 
-    // Listen for custom event to open event form (wired up in Task 8)
-    window.addEventListener('open-event-form', (e) => {
-        const modal = document.getElementById('event-modal');
-        modal.classList.remove('hidden');
-    });
+    // Event form (create/edit/delete)
+    setupEventForm(loadEvents);
 
-    // Modal close
-    document.querySelector('.modal-close').addEventListener('click', () => {
-        document.getElementById('event-modal').classList.add('hidden');
-    });
+    // Drag-and-drop for event blocks
+    setupDragDrop(loadEvents);
 
     // Initial render
     loadEvents();
