@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dark.css" id="dark-theme" disabled>
+</head>
+<body>
+    <nav id="navbar">
+        <div class="nav-left">
+            <button id="btn-today">Today</button>
+            <button id="btn-prev">&larr;</button>
+            <button id="btn-next">&rarr;</button>
+            <span id="nav-title"></span>
+        </div>
+        <div class="nav-center">
+            <button class="view-btn" data-view="yearly">Year</button>
+            <button class="view-btn" data-view="monthly">Month</button>
+            <button class="view-btn" data-view="weekly">Week</button>
+            <button class="view-btn" data-view="daily">Day</button>
+        </div>
+        <div class="nav-right">
+            <input type="text" id="search-input" placeholder="Search...">
+            <button id="btn-dark-mode">&#9789;</button>
+        </div>
+    </nav>
+    <main id="calendar"></main>
+
+    <div id="event-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <form id="event-form">
+                <input type="hidden" id="form-id">
+                <input type="hidden" id="form-recurrence-parent">
+                <label>Title<input type="text" id="form-title" required></label>
+                <label>Start<input type="datetime-local" id="form-start" required></label>
+                <label>End<input type="datetime-local" id="form-end" required></label>
+                <label>Description<textarea id="form-description"></textarea></label>
+                <label>Location<input type="text" id="form-location"></label>
+                <label>Category<input type="text" id="form-category"></label>
+                <label>Color<input type="color" id="form-color" value="#4A90D9"></label>
+                <fieldset id="recurrence-fieldset">
+                    <legend>Recurrence</legend>
+                    <label>Type
+                        <select id="form-rec-type">
+                            <option value="">None</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </label>
+                    <label>Interval<input type="number" id="form-rec-interval" min="1" value="1"></label>
+                    <label>End Date<input type="date" id="form-rec-end"></label>
+                    <div id="days-of-week" class="hidden">
+                        <label><input type="checkbox" value="0">Sun</label>
+                        <label><input type="checkbox" value="1">Mon</label>
+                        <label><input type="checkbox" value="2">Tue</label>
+                        <label><input type="checkbox" value="3">Wed</label>
+                        <label><input type="checkbox" value="4">Thu</label>
+                        <label><input type="checkbox" value="5">Fri</label>
+                        <label><input type="checkbox" value="6">Sat</label>
+                    </div>
+                </fieldset>
+                <div class="form-actions">
+                    <button type="submit" id="btn-save">Save</button>
+                    <button type="button" id="btn-delete" class="hidden">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="/js/app.js"></script>
+</body>
+</html>
