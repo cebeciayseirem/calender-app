@@ -106,6 +106,7 @@ function updateNavTitle() {
 
 function render() {
     const container = document.getElementById('calendar');
+    container.innerHTML = '';
     updateNavTitle();
     updateActiveViewButton();
 
