@@ -1,1 +1,75 @@
-/* Dark theme — will be populated in a later task */
+/* ===== Dark Theme ===== */
+
+body {
+    background: #1a1a2e;
+    color: #e0e0e0;
+}
+
+#navbar {
+    background: #16213e;
+    border-bottom-color: #2a2a4a;
+}
+
+.view-btn {
+    color: #e0e0e0;
+    border-color: #2a2a4a;
+}
+
+.view-btn.active {
+    background: #4A90D9;
+}
+
+#search-input {
+    background: #16213e;
+    color: #e0e0e0;
+    border-color: #2a2a4a;
+}
+
+.modal-content {
+    background: #16213e;
+    color: #e0e0e0;
+}
+
+form input, form textarea, form select {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    border-color: #2a2a4a;
+}
+
+.month-header-row, .week-day-header {
+    background: #16213e;
+}
+
+.month-week-row, .month-day-cell, .week-day-column {
+    border-color: #2a2a4a;
+}
+
+.week-num-cell {
+    color: #888;
+}
+
+.week-num-cell:hover {
+    background: #2a2a4a;
+}
+
+.day-number {
+    color: #e0e0e0;
+}
+
+.month-event-more {
+    color: #888;
+}
+
+button {
+    color: #e0e0e0;
+    background: #2a2a4a;
+    border-color: #3a3a5a;
+}
+
+#btn-save {
+    background: #4A90D9;
+}
+
+#btn-delete {
+    background: #dc3545;
+}
