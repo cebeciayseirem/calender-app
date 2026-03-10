@@ -55,7 +55,7 @@ function generateOccurrences(event, rangeStart, rangeEnd) {
 
     while (current <= limit) {
         if (current >= rangeStart || new Date(current.getTime() + duration) >= rangeStart) {
-            if (rec.type === 'weekly' && rec.daysOfWeek) {
+            if (rec.type === 'weekly' && rec.daysOfWeek && rec.daysOfWeek.length > 0) {
                 if (rec.daysOfWeek.includes(current.getDay())) {
                     occurrences.push(makeOccurrence(event, current, duration));
                 }
@@ -73,7 +73,7 @@ function advanceDate(date, rec) {
     switch (rec.type) {
         case 'daily': d.setDate(d.getDate() + rec.interval); break;
         case 'weekly':
-            if (rec.daysOfWeek) {
+            if (rec.daysOfWeek && rec.daysOfWeek.length > 0) {
                 d.setDate(d.getDate() + 1);
             } else {
                 d.setDate(d.getDate() + 7 * rec.interval);
