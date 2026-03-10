@@ -73,3 +73,11 @@ button {
 #btn-delete {
     background: #dc3545;
 }
+
+.month-day-cell.today {
+    background: #1e2a4a;
+}
+
+.week-day-header.today {
+    background: #4A90D9;
+}

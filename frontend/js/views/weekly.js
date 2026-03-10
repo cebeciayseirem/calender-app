@@ -3,6 +3,7 @@ import { calculateOverlapLayout } from '../utils/overlap.js';
 
 export function renderWeekly(container, state) {
     const monday = getMonday(state.currentDate);
+    const today = new Date();
     const wrapper = document.createElement('div');
     wrapper.className = 'weekly-view';
 
@@ -15,6 +16,9 @@ export function renderWeekly(container, state) {
 
         const header = document.createElement('div');
         header.className = 'week-day-header';
+        if (isSameDay(day, today)) {
+            header.classList.add('today');
+        }
         header.textContent = day.toLocaleDateString('default', { weekday: 'short', day: 'numeric' });
         header.addEventListener('click', () => {
             window.dispatchEvent(new CustomEvent('navigate', { detail: { view: 'daily', date: day } }));

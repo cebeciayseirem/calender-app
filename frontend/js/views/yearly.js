@@ -2,6 +2,7 @@ import { getDaysInMonth, isSameDay } from '../utils/dateUtils.js';
 
 export function renderYearly(container, state) {
     const year = state.currentDate.getFullYear();
+    const today = new Date();
     const wrapper = document.createElement('div');
     wrapper.className = 'yearly-view';
 
@@ -45,6 +46,10 @@ export function renderYearly(container, state) {
             const dayEl = document.createElement('span');
             dayEl.className = 'mini-day';
             dayEl.textContent = day;
+
+            if (isSameDay(date, today)) {
+                dayEl.classList.add('today');
+            }
 
             const dayEvents = state.events.filter(e => isSameDay(new Date(e.start), date));
             if (dayEvents.length > 0) {

@@ -3,6 +3,7 @@ import { getWeekNumber, getDaysInMonth, isSameDay } from '../utils/dateUtils.js'
 export function renderMonthly(container, state) {
     const year = state.currentDate.getFullYear();
     const month = state.currentDate.getMonth();
+    const today = new Date();
     const daysInMonth = getDaysInMonth(year, month);
     const firstDay = new Date(year, month, 1).getDay();
     const startOffset = firstDay === 0 ? 6 : firstDay - 1; // Monday start
@@ -56,6 +57,9 @@ export function renderMonthly(container, state) {
             const cellIndex = row * 7 + col;
             if (cellIndex >= startOffset && dayCounter <= daysInMonth) {
                 const date = new Date(year, month, dayCounter);
+                if (isSameDay(date, today)) {
+                    cell.classList.add('today');
+                }
                 cell.innerHTML = `<span class="day-number">${dayCounter}</span>`;
 
                 // Add event indicators

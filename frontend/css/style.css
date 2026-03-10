@@ -371,6 +371,34 @@ form textarea {
     margin-bottom: 0;
 }
 
+/* ===== Today Indicator ===== */
+.mini-day.today {
+    background: #4A90D9;
+    color: #fff;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+.month-day-cell.today {
+    background: #e8f0fe;
+}
+
+.month-day-cell.today .day-number {
+    background: #4A90D9;
+    color: #fff;
+    border-radius: 50%;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+}
+
+.week-day-header.today {
+    background: #4A90D9;
+    color: #fff;
+}
+
 /* ===== Utilities ===== */
 .hidden {
     display: none !important;
