@@ -4,6 +4,7 @@ import { renderMonthly } from './views/monthly.js';
 import { renderWeekly } from './views/weekly.js';
 import { renderDaily } from './views/daily.js';
 import { expandRecurrences } from './utils/recurrence.js';
+import { toLocalISO } from './utils/dateUtils.js';
 import { setupDragDrop } from './components/dragDrop.js';
 import { setupEventForm } from './components/eventForm.js';
 
@@ -42,13 +43,13 @@ export async function loadEvents() {
 
     switch (state.view) {
         case 'yearly': {
-            start = new Date(d.getFullYear(), 0, 1).toISOString();
-            end = new Date(d.getFullYear() + 1, 0, 1).toISOString();
+            start = toLocalISO(new Date(d.getFullYear(), 0, 1));
+            end = toLocalISO(new Date(d.getFullYear() + 1, 0, 1));
             break;
         }
         case 'monthly': {
-            start = new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
-            end = new Date(d.getFullYear(), d.getMonth() + 1, 1).toISOString();
+            start = toLocalISO(new Date(d.getFullYear(), d.getMonth(), 1));
+            end = toLocalISO(new Date(d.getFullYear(), d.getMonth() + 1, 1));
             break;
         }
         case 'weekly': {
@@ -58,15 +59,15 @@ export async function loadEvents() {
             weekStart.setHours(0, 0, 0, 0);
             const weekEnd = new Date(weekStart);
             weekEnd.setDate(weekStart.getDate() + 7);
-            start = weekStart.toISOString();
-            end = weekEnd.toISOString();
+            start = toLocalISO(weekStart);
+            end = toLocalISO(weekEnd);
             break;
         }
         case 'daily': {
             const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
             const dayEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
-            start = dayStart.toISOString();
-            end = dayEnd.toISOString();
+            start = toLocalISO(dayStart);
+            end = toLocalISO(dayEnd);
             break;
         }
     }

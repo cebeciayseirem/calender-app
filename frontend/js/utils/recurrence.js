@@ -1,3 +1,5 @@
+import { toLocalISO } from './dateUtils.js';
+
 export function expandRecurrences(events, currentDate, view) {
     const { start, end } = getViewRange(currentDate, view);
     const expanded = [];
@@ -96,7 +98,3 @@ function makeOccurrence(event, start, duration) {
     };
 }
 
-function toLocalISO(date) {
-    const pad = (n) => String(n).padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-}
