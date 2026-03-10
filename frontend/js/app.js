@@ -1,13 +1,12 @@
 import { fetchEvents, fetchEvent, createEvent, updateEvent, deleteEvent, searchEvents } from './api.js';
+import { renderYearly } from './views/yearly.js';
+import { renderMonthly } from './views/monthly.js';
+import { renderWeekly } from './views/weekly.js';
+import { renderDaily } from './views/daily.js';
+import { expandRecurrences } from './utils/recurrence.js';
 
 // Re-export API functions for use by other modules
 export { fetchEvents, fetchEvent, createEvent, updateEvent, deleteEvent, searchEvents };
-
-// Stub renderers until real views are created
-const renderYearly = (container, state) => { container.textContent = 'Yearly view (coming soon)'; };
-const renderMonthly = (container, state) => { container.textContent = 'Monthly view (coming soon)'; };
-const renderWeekly = (container, state) => { container.textContent = 'Weekly view (coming soon)'; };
-const renderDaily = (container, state) => { container.textContent = 'Daily view (coming soon)'; };
 
 const renderers = {
     yearly: renderYearly,
@@ -71,7 +70,8 @@ export async function loadEvents() {
     }
 
     try {
-        state.events = await fetchEvents(start, end);
+        const raw = await fetchEvents(start, end);
+        state.events = expandRecurrences(raw, state.currentDate, state.view);
     } catch (err) {
         console.error('Failed to load events:', err);
         state.events = [];
@@ -183,8 +183,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     });
 
+    // Listen for navigate events from views (drill-down)
+    window.addEventListener('navigate', (e) => {
+        const { view, date } = e.detail;
+        if (view) state.view = view;
+        if (date) state.currentDate = new Date(date);
+        loadEvents();
+    });
+
     // Listen for custom event to open event form (wired up in Task 8)
-    document.addEventListener('open-event-form', (e) => {
+    window.addEventListener('open-event-form', (e) => {
         const modal = document.getElementById('event-modal');
         modal.classList.remove('hidden');
     });
