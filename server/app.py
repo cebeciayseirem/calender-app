@@ -34,7 +34,9 @@ def get_events():
     start = request.args.get('start')
     end = request.args.get('end')
     if start and end:
-        events = [e for e in events if e['end'] >= start and e['start'] <= end]
+        events = [e for e in events if
+                  e.get('recurrence') or
+                  (e['end'] >= start and e['start'] <= end)]
     return jsonify(events)
 
 
