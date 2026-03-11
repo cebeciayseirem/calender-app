@@ -41,9 +41,9 @@ export function WeeklyView({
   // Auto-scroll to 7 AM on mount
   useEffect(() => {
     if (scrollRef.current) {
-      const row7am = scrollRef.current.querySelector('[data-hour="7"]');
+      const row7am = scrollRef.current.querySelector('[data-hour="7"]') as HTMLElement | null;
       if (row7am) {
-        row7am.scrollIntoView({ block: 'start' });
+        scrollRef.current.scrollTop = row7am.offsetTop;
       }
     }
   }, [currentDate]);
@@ -62,7 +62,7 @@ export function WeeklyView({
   });
 
   return (
-    <div className="h-full flex flex-col overflow-hidden rounded-xl border border-border bg-surface">
+    <div className="h-full flex flex-col overflow-clip rounded-lg border border-border bg-surface">
       {/* Fixed day headers */}
       <div
         className="grid shrink-0 border-b border-border"
