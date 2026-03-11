@@ -63,46 +63,41 @@ export function WeeklyView({
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      {/* Sticky day headers */}
-      <div
-        className="grid shrink-0 border-b border-border"
-        style={{ gridTemplateColumns: '48px repeat(7, 1fr)' }}
-      >
-        <div /> {/* Empty corner cell */}
-        {days.map((day, i) => {
-          const isToday = isSameDay(day, today);
-          return (
-            <div
-              key={i}
-              className={`relative text-center py-1.5 px-2 cursor-pointer transition-colors hover:bg-white/[0.03] border-r border-border last:border-r-0 ${
-                isToday ? 'bg-white/[0.02]' : ''
-              }`}
-              onClick={() => onNavigate('daily', day)}
-            >
-              {isToday && (
-                <div className="absolute top-0 left-0 right-0 h-1 bg-accent" />
-              )}
-              <span className="block text-[10px] uppercase tracking-wider text-text-muted font-medium">
-                {day.toLocaleDateString('en-US', { weekday: 'short' })}
-              </span>
-              <span
-                className={`block text-base font-semibold ${
-                  isToday ? 'text-accent' : 'text-text'
-                }`}
-              >
-                {day.getDate()}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Scrollable hour grid */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         <div
           className="grid"
           style={{ gridTemplateColumns: '48px repeat(7, 1fr)' }}
         >
+          {/* Sticky day headers */}
+          <div className="sticky top-0 z-10 bg-surface" /> {/* Empty corner cell */}
+          {days.map((day, i) => {
+            const isToday = isSameDay(day, today);
+            return (
+              <div
+                key={i}
+                className={`sticky top-0 z-10 bg-surface text-center py-1.5 px-2 cursor-pointer transition-colors hover:bg-white/[0.03] border-b border-border border-r border-r-border last:border-r-0 ${
+                  isToday ? 'bg-white/[0.02]' : ''
+                }`}
+                onClick={() => onNavigate('daily', day)}
+              >
+                {isToday && (
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-accent" />
+                )}
+                <span className="block text-[10px] uppercase tracking-wider text-text-muted font-medium">
+                  {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                </span>
+                <span
+                  className={`block text-base font-semibold ${
+                    isToday ? 'text-accent' : 'text-text'
+                  }`}
+                >
+                  {day.getDate()}
+                </span>
+              </div>
+            );
+          })}
+
+          {/* Hour rows */}
           {HOURS.map((hour) => (
             <HourRow
               key={hour}
