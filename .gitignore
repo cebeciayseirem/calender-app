@@ -30,6 +30,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# claude
+.claude/
+
 # database
 data/calendar.db
 data/calendar.db-wal
