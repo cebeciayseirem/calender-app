@@ -37,3 +37,9 @@ Thumbs.db
 data/calendar.db
 data/calendar.db-wal
 data/calendar.db-shm
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
