@@ -66,11 +66,7 @@ export function WeeklyView({
       {/* Fixed day headers */}
       <div
         className="grid shrink-0 border-b border-border"
-        style={{
-          gridTemplateColumns: '48px repeat(7, 1fr)',
-          scrollbarGutter: 'stable',
-          overflowY: 'hidden',
-        }}
+        style={{ gridTemplateColumns: '48px repeat(7, 1fr)' }}
       >
         <div /> {/* Empty corner cell */}
         {days.map((day, i) => {
@@ -105,7 +101,6 @@ export function WeeklyView({
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto"
-        style={{ scrollbarGutter: 'stable' }}
       >
         <div
           className="grid"
