@@ -198,7 +198,7 @@ function EventCard({
 
   return (
     <div
-      className="absolute left-0.5 right-0.5 rounded px-2 py-1 text-[12px] cursor-pointer hover:brightness-110 transition-all leading-tight overflow-hidden z-10"
+      className="absolute left-0.5 right-[30%] rounded px-2 py-1 text-[12px] cursor-pointer hover:brightness-110 transition-all leading-tight overflow-hidden z-10"
       style={{
         top: `${top}px`,
         height: `${height}px`,
