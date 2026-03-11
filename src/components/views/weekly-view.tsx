@@ -119,3 +119,90 @@ export function WeeklyView({
     </div>
   );
 }
+
+function HourRow({
+  hour,
+  days,
+  today,
+  eventMap,
+  onEventClick,
+  onEmptyClick,
+}: {
+  hour: number;
+  days: Date[];
+  today: Date;
+  eventMap: Map<string, ExpandedEvent[]>;
+  onEventClick: (event: ExpandedEvent) => void;
+  onEmptyClick: (date?: Date, hour?: number) => void;
+}) {
+  return (
+    <>
+      {/* Time label cell */}
+      <div
+        data-hour={hour}
+        className="pr-2 py-1 text-right text-[11px] text-text-muted font-medium border-b border-white/[0.04] flex items-start justify-end"
+      >
+        {formatHourLabel(hour)}
+      </div>
+
+      {/* 7 day cells for this hour */}
+      {days.map((day, dayIndex) => (
+        <HourCell
+          key={dayIndex}
+          day={day}
+          hour={hour}
+          dayIndex={dayIndex}
+          isToday={isSameDay(day, today)}
+          events={eventMap.get(`${dayIndex}-${hour}`) || []}
+          onEventClick={onEventClick}
+          onEmptyClick={onEmptyClick}
+        />
+      ))}
+    </>
+  );
+}
+
+function HourCell({
+  day,
+  hour,
+  dayIndex,
+  isToday,
+  events,
+  onEventClick,
+  onEmptyClick,
+}: {
+  day: Date;
+  hour: number;
+  dayIndex: number;
+  isToday: boolean;
+  events: ExpandedEvent[];
+  onEventClick: (event: ExpandedEvent) => void;
+  onEmptyClick: (date?: Date, hour?: number) => void;
+}) {
+  const first = events[0];
+  const extra = events.length - 1;
+
+  return (
+    <div
+      className={`min-h-[60px] border-b border-white/[0.04] border-r border-r-border last:border-r-0 p-1 cursor-pointer transition-colors hover:bg-white/[0.03] ${
+        isToday ? 'bg-white/[0.02]' : ''
+      }`}
+      onClick={() => onEmptyClick(day, hour)}
+    >
+      {first && (
+        <EventCard event={first} onEventClick={onEventClick} />
+      )}
+      {extra > 0 && (
+        <button
+          className="mt-1 text-[11px] text-accent hover:text-accent-hover font-medium cursor-pointer bg-transparent border-none p-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEventClick(events[1]);
+          }}
+        >
+          +{extra} more
+        </button>
+      )}
+    </div>
+  );
+}
