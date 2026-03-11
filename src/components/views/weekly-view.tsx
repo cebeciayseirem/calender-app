@@ -1,8 +1,6 @@
 'use client';
 
 import { getMonday, isSameDay, formatTime, toLocalISO } from '@/lib/date-utils';
-import { calculateOverlapLayout } from '@/lib/overlap';
-import { startOfDay } from 'date-fns';
 import type { CalendarView, ExpandedEvent } from '@/types/event';
 import { useUpdateEvent } from '@/hooks/use-events';
 import {
@@ -22,8 +20,6 @@ interface WeeklyViewProps {
   onEmptyClick: (date?: Date, hour?: number) => void;
   onNavigate: (view: CalendarView, date: Date) => void;
 }
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 export function WeeklyView({
   events,
@@ -88,14 +84,12 @@ export function WeeklyView({
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="flex">
+      <div className="flex h-full">
         {days.map((day, i) => {
           const isToday = isSameDay(day, today);
-          const dayEvents = events.filter((e) =>
-            isSameDay(new Date(e.start), day)
-          );
-          const layout = calculateOverlapLayout(dayEvents);
-          const dayStart = startOfDay(day).getTime();
+          const dayEvents = events
+            .filter((e) => isSameDay(new Date(e.start), day))
+            .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
           return (
             <DayColumn
@@ -103,8 +97,7 @@ export function WeeklyView({
               dayIndex={i}
               day={day}
               isToday={isToday}
-              layout={layout}
-              dayStart={dayStart}
+              dayEvents={dayEvents}
               onEventClick={onEventClick}
               onEmptyClick={onEmptyClick}
               onNavigate={onNavigate}
@@ -120,8 +113,7 @@ function DayColumn({
   dayIndex,
   day,
   isToday,
-  layout,
-  dayStart,
+  dayEvents,
   onEventClick,
   onEmptyClick,
   onNavigate,
@@ -129,8 +121,7 @@ function DayColumn({
   dayIndex: number;
   day: Date;
   isToday: boolean;
-  layout: ReturnType<typeof calculateOverlapLayout>;
-  dayStart: number;
+  dayEvents: ExpandedEvent[];
   onEventClick: (event: ExpandedEvent) => void;
   onEmptyClick: (date?: Date, hour?: number) => void;
   onNavigate: (view: CalendarView, date: Date) => void;
@@ -138,40 +129,42 @@ function DayColumn({
   const { setNodeRef, isOver } = useDroppable({ id: dayIndex });
 
   return (
-    <div className="flex-1 relative border-r border-border last:border-r-0">
+    <div className="flex-1 relative border-r border-border last:border-r-0 flex flex-col">
+      {isToday && (<>
+        <div className="absolute top-0 left-0 right-0 h-1 rounded-t-xl bg-accent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] via-white/[0.02] via-50% to-transparent pointer-events-none" />
+      </>)}
       <div
-        className={`text-center p-2 font-bold cursor-pointer ${
-          isToday ? 'bg-accent text-white' : 'bg-surface'
-        }`}
+        className="text-center py-1.5 px-2 cursor-pointer transition-colors hover:bg-white/[0.03]"
         onClick={() => onNavigate('daily', day)}
       >
-        {day.toLocaleDateString('default', {
-          weekday: 'short',
-          day: 'numeric',
-        })}
+        <span className="block text-[10px] uppercase tracking-wider text-text-muted font-medium">
+          {day.toLocaleDateString('en-US', { weekday: 'short' })}
+        </span>
+        <span className={`block text-base font-semibold ${
+          isToday ? 'text-accent' : 'text-text'
+        }`}>
+          {day.getDate()}
+        </span>
       </div>
+
+      <div className="mx-2 h-px bg-white/[0.06]" />
 
       <div
         ref={setNodeRef}
-        className={`relative h-[calc(100vh-130px)] transition-colors ${
+        className={`flex-1 overflow-y-auto p-2 flex flex-col gap-2 transition-colors ${
           isOver ? 'bg-accent/10' : ''
         }`}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
-            const hour = Math.floor(
-              (e.nativeEvent.offsetY / e.currentTarget.clientHeight) * 24
-            );
-            onEmptyClick(day, hour);
+            onEmptyClick(day, 9);
           }
         }}
       >
-        {layout.map(({ event, column, totalColumns }, idx) => (
+        {dayEvents.map((event, idx) => (
           <DraggableEvent
             key={idx}
             event={event}
-            column={column}
-            totalColumns={totalColumns}
-            dayStart={dayStart}
             onEventClick={onEventClick}
           />
         ))}
@@ -182,32 +175,15 @@ function DayColumn({
 
 function DraggableEvent({
   event,
-  column,
-  totalColumns,
-  dayStart,
   onEventClick,
 }: {
   event: ExpandedEvent;
-  column: number;
-  totalColumns: number;
-  dayStart: number;
   onEventClick: (event: ExpandedEvent) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: event.id + event.start });
 
-  const eStart = new Date(event.start).getTime();
-  const eEnd = new Date(event.end).getTime();
-  const topPercent = ((eStart - dayStart) / MS_PER_DAY) * 100;
-  const heightPercent = ((eEnd - eStart) / MS_PER_DAY) * 100;
-  const widthPercent = 100 / totalColumns;
-  const leftPercent = column * widthPercent;
-
   const style: React.CSSProperties = {
-    top: `${topPercent}%`,
-    height: `${heightPercent}%`,
-    left: `${leftPercent}%`,
-    width: `${widthPercent}%`,
     backgroundColor: event.color || '#4A90D9',
     opacity: isDragging ? 0.5 : 1,
     transform: transform
@@ -221,16 +197,16 @@ function DraggableEvent({
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className="absolute rounded-md px-2 py-1 text-white text-[13px] overflow-hidden cursor-grab shadow-sm hover:shadow-md transition-shadow"
+      className="rounded px-2.5 py-2 text-[13px] cursor-grab shadow-[2px_2px_4px_rgba(0,0,0,0.3)] hover:shadow-[2px_3px_6px_rgba(0,0,0,0.45)] hover:brightness-110 transition-all"
       style={style}
       onClick={(e) => {
         e.stopPropagation();
         onEventClick(event);
       }}
     >
-      <span className="font-semibold block">{event.title}</span>
-      <span className="text-[11px] opacity-80">
-        {formatTime(new Date(event.start))}
+      <span className="font-semibold block text-white leading-snug">{event.title}</span>
+      <span className="text-[11px] text-white/75">
+        {formatTime(new Date(event.start))} – {formatTime(new Date(event.end))}
       </span>
     </div>
   );

@@ -83,19 +83,25 @@ export function CalendarShell() {
         onSearchChange={setSearchQuery}
       />
 
-      <main className="mt-[60px] p-4 relative min-h-[calc(100vh-60px)]">
-        {view === 'yearly' && <YearlyView {...viewProps} />}
-        {view === 'monthly' && <MonthlyView {...viewProps} />}
-        {view === 'weekly' && <WeeklyView {...viewProps} />}
-        {view === 'daily' && <DailyView {...viewProps} />}
+      <main className="mt-[56px] relative" style={{ height: 'calc(100vh - 56px - 64px)' }}>
+        <div className="p-4 h-full overflow-hidden">
+          {view === 'yearly' && <YearlyView {...viewProps} />}
+          {view === 'monthly' && <MonthlyView {...viewProps} />}
+          {view === 'weekly' && <WeeklyView {...viewProps} />}
+          {view === 'daily' && <DailyView {...viewProps} />}
+        </div>
+      </main>
 
+      <footer className="fixed bottom-0 left-0 w-full h-16 bg-bg flex items-center justify-end px-6 z-[100]">
         <button
           onClick={() => openCreateModal(currentDate)}
-          className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-accent text-white text-[28px] border-none cursor-pointer shadow-[0_4px_12px_rgba(74,144,217,0.4)] flex items-center justify-center transition-all hover:bg-accent-hover hover:scale-110 z-[100] leading-none"
+          className="group w-11 h-11 rounded-xl bg-gradient-to-br from-accent to-accent-hover text-white border-none cursor-pointer shadow-[0_4px_16px_rgba(74,144,217,0.35)] flex items-center justify-center transition-all duration-200 hover:scale-105 hover:shadow-[0_6px_24px_rgba(74,144,217,0.5)] active:scale-95"
         >
-          +
+          <svg className="w-5 h-5 transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" d="M12 5v14M5 12h14" />
+          </svg>
         </button>
-      </main>
+      </footer>
 
       {modalState.open && (
         <EventModal
