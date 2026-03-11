@@ -209,10 +209,10 @@ function EventCard({
         onEventClick(event);
       }}
     >
-      <span className="font-semibold block text-white leading-snug truncate">
+      <span className="font-semibold block text-white leading-snug break-words">
         {event.title}
       </span>
-      <span className="text-[11px] text-white/75 truncate block">
+      <span className="text-[11px] text-white/75 block">
         {formatTime(start)} – {formatTime(end)}
       </span>
     </div>
