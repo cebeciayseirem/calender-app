@@ -62,35 +62,29 @@ export function WeeklyView({
   });
 
   return (
-    <div
-      ref={scrollRef}
-      className="h-full overflow-y-auto rounded-lg border border-border bg-surface"
-    >
+    <div className="h-full flex flex-col">
+      {/* Sticky day headers */}
       <div
-        className="grid"
-        style={{ gridTemplateColumns: '48px repeat(7, 1fr)' }}
+        className="grid shrink-0 border-b border-white/[0.06] pb-2"
+        style={{ gridTemplateColumns: '60px repeat(7, 1fr)' }}
       >
-        {/* Sticky day headers */}
-        <div className="sticky top-0 z-10 bg-surface border-b border-border" />
+        <div /> {/* Empty corner cell */}
         {days.map((day, i) => {
           const isToday = isSameDay(day, today);
           return (
             <div
               key={i}
-              className={`sticky top-0 z-10 bg-surface text-center py-1.5 px-2 cursor-pointer transition-colors hover:bg-white/[0.03] border-b border-border border-r border-r-border last:border-r-0 ${
-                isToday ? 'bg-white/[0.02]' : ''
-              }`}
+              className="text-center py-2 cursor-pointer"
               onClick={() => onNavigate('daily', day)}
             >
-              {isToday && (
-                <div className="absolute top-0 left-0 right-0 h-1 bg-accent" />
-              )}
-              <span className="block text-[10px] uppercase tracking-wider text-text-muted font-medium">
+              <span className="block text-[11px] uppercase tracking-wider text-text-muted font-medium">
                 {day.toLocaleDateString('en-US', { weekday: 'short' })}
               </span>
               <span
-                className={`block text-base font-semibold ${
-                  isToday ? 'text-accent' : 'text-text'
+                className={`inline-flex items-center justify-center text-[26px] font-normal mt-0.5 ${
+                  isToday
+                    ? 'w-10 h-10 rounded-full bg-accent text-white'
+                    : 'text-text'
                 }`}
               >
                 {day.getDate()}
@@ -98,19 +92,26 @@ export function WeeklyView({
             </div>
           );
         })}
+      </div>
 
-        {/* Hour rows */}
-        {HOURS.map((hour) => (
-          <HourRow
-            key={hour}
-            hour={hour}
-            days={days}
-            today={today}
-            eventMap={eventMap}
-            onEventClick={onEventClick}
-            onEmptyClick={onEmptyClick}
-          />
-        ))}
+      {/* Scrollable hour grid */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+        <div
+          className="grid"
+          style={{ gridTemplateColumns: '60px repeat(7, 1fr)' }}
+        >
+          {HOURS.map((hour) => (
+            <HourRow
+              key={hour}
+              hour={hour}
+              days={days}
+              today={today}
+              eventMap={eventMap}
+              onEventClick={onEventClick}
+              onEmptyClick={onEmptyClick}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -133,12 +134,16 @@ function HourRow({
 }) {
   return (
     <>
-      {/* Time label cell */}
+      {/* Time label — positioned so text aligns with the top border line */}
       <div
         data-hour={hour}
-        className="pr-2 py-1 text-right text-[11px] text-text-muted font-medium border-b border-white/[0.04] flex items-start justify-end"
+        className="relative h-[60px]"
       >
-        {formatHourLabel(hour)}
+        {hour > 0 && (
+          <span className="absolute -top-[9px] right-3 text-[11px] text-text-muted">
+            {formatHourLabel(hour)}
+          </span>
+        )}
       </div>
 
       {/* 7 day cells for this hour */}
@@ -147,7 +152,6 @@ function HourRow({
           key={dayIndex}
           day={day}
           hour={hour}
-          dayIndex={dayIndex}
           isToday={isSameDay(day, today)}
           events={eventMap.get(`${dayIndex}-${hour}`) || []}
           onEventClick={onEventClick}
@@ -161,7 +165,6 @@ function HourRow({
 function HourCell({
   day,
   hour,
-  dayIndex,
   isToday,
   events,
   onEventClick,
@@ -169,7 +172,6 @@ function HourCell({
 }: {
   day: Date;
   hour: number;
-  dayIndex: number;
   isToday: boolean;
   events: ExpandedEvent[];
   onEventClick: (event: ExpandedEvent) => void;
@@ -180,8 +182,8 @@ function HourCell({
 
   return (
     <div
-      className={`min-h-[60px] border-b border-white/[0.04] border-r border-r-border last:border-r-0 p-1 cursor-pointer transition-colors hover:bg-white/[0.03] ${
-        isToday ? 'bg-white/[0.02]' : ''
+      className={`h-[60px] border-t border-white/[0.06] border-l border-l-white/[0.06] p-0.5 cursor-pointer transition-colors hover:bg-white/[0.02] ${
+        isToday ? 'bg-accent/[0.04]' : ''
       }`}
       onClick={() => onEmptyClick(day, hour)}
     >
@@ -190,7 +192,7 @@ function HourCell({
       )}
       {extra > 0 && (
         <button
-          className="mt-1 text-[11px] text-accent hover:text-accent-hover font-medium cursor-pointer bg-transparent border-none p-0"
+          className="mt-0.5 text-[11px] text-accent hover:text-accent-hover font-medium cursor-pointer bg-transparent border-none p-0 pl-1"
           onClick={(e) => {
             e.stopPropagation();
             onEventClick(events[1]);
@@ -212,7 +214,7 @@ function EventCard({
 }) {
   return (
     <div
-      className="rounded px-2.5 py-2 text-[13px] cursor-pointer shadow-[2px_2px_4px_rgba(0,0,0,0.3)] hover:shadow-[2px_3px_6px_rgba(0,0,0,0.45)] hover:brightness-110 transition-all"
+      className="rounded px-2 py-1.5 text-[12px] cursor-pointer hover:brightness-110 transition-all leading-tight"
       style={{ backgroundColor: event.color || '#4A90D9' }}
       onClick={(e) => {
         e.stopPropagation();
