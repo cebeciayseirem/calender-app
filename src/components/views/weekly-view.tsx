@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { getMonday, isSameDay, formatTime } from '@/lib/date-utils';
 import type { CalendarView, ExpandedEvent } from '@/types/event';
 
@@ -37,6 +37,17 @@ export function WeeklyView({
     day.setDate(day.getDate() + i);
     return day;
   });
+
+  // Current time indicator — updates every 5 minutes
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const todayIndex = days.findIndex((d) => isSameDay(d, today));
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const nowTop = (nowMinutes / 60) * 60; // 60px per hour
 
   // Auto-scroll to 7 AM on mount
   useEffect(() => {
@@ -97,7 +108,7 @@ export function WeeklyView({
       {/* Scrollable hour grid */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         <div
-          className="grid"
+          className="grid relative"
           style={{ gridTemplateColumns: '60px repeat(7, 1fr)' }}
         >
           {HOURS.map((hour) => (
@@ -111,6 +122,24 @@ export function WeeklyView({
               onEmptyClick={onEmptyClick}
             />
           ))}
+
+          {/* Current time indicator */}
+          {todayIndex >= 0 && (
+            <div
+              className="absolute pointer-events-none z-20"
+              style={{
+                top: `${nowTop}px`,
+                left: `60px`,
+                right: 0,
+                paddingLeft: `calc((100% - 60px) / 7 * ${todayIndex})`,
+              }}
+            >
+              <div className="relative flex items-center">
+                <div className="w-3 h-3 rounded-full bg-red-500 -ml-1.5 shrink-0" />
+                <div className="flex-1 h-[2px] bg-red-500" />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
