@@ -62,7 +62,7 @@ export function WeeklyView({
   });
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden rounded-xl border border-border bg-surface">
       {/* Fixed day headers */}
       <div
         className="grid shrink-0 border-b border-border"
