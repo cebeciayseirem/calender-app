@@ -9,6 +9,7 @@ import { MonthlyView } from './views/monthly-view';
 import { WeeklyView } from './views/weekly-view';
 import { DailyView } from './views/daily-view';
 import { EventModal } from './event-modal';
+import { EventViewCard } from './event-view-card';
 import { useMemo, useState, useCallback } from 'react';
 import type { ExpandedEvent } from '@/types/event';
 
@@ -54,6 +55,22 @@ export function CalendarShell() {
     setModalState({ open: false });
   }, []);
 
+  // View card state
+  const [viewEvent, setViewEvent] = useState<ExpandedEvent | null>(null);
+
+  const openViewCard = useCallback((event: ExpandedEvent) => {
+    setViewEvent(event);
+  }, []);
+
+  const handleViewCardEdit = useCallback((event: ExpandedEvent) => {
+    setViewEvent(null);
+    openEditModal(event);
+  }, [openEditModal]);
+
+  const closeViewCard = useCallback(() => {
+    setViewEvent(null);
+  }, []);
+
   const navigate = useCallback(
     (newView: typeof view, date: Date) => {
       setView(newView);
@@ -65,7 +82,7 @@ export function CalendarShell() {
   const viewProps = {
     events,
     currentDate,
-    onEventClick: openEditModal,
+    onEventClick: openViewCard,
     onEmptyClick: openCreateModal,
     onNavigate: navigate,
   };
@@ -109,6 +126,14 @@ export function CalendarShell() {
           defaultDate={modalState.date}
           defaultHour={modalState.hour}
           onClose={closeModal}
+        />
+      )}
+
+      {viewEvent && (
+        <EventViewCard
+          event={viewEvent}
+          onClose={closeViewCard}
+          onEdit={handleViewCardEdit}
         />
       )}
     </>
