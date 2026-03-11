@@ -123,15 +123,14 @@ export function WeeklyView({
             />
           ))}
 
-          {/* Current time indicator */}
+          {/* Current time indicator — only on today's column */}
           {todayIndex >= 0 && (
             <div
               className="absolute pointer-events-none z-20"
               style={{
                 top: `${nowTop}px`,
-                left: `60px`,
-                right: 0,
-                paddingLeft: `calc((100% - 60px) / 7 * ${todayIndex})`,
+                left: `calc(60px + (100% - 60px) / 7 * ${todayIndex})`,
+                width: `calc((100% - 60px) / 7)`,
               }}
             >
               <div className="relative flex items-center">
