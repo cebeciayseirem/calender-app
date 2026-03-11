@@ -26,6 +26,7 @@ export function EventModal({
 
   const isEditing = !!event;
   const titleRef = useRef<HTMLInputElement>(null);
+  const descRef = useRef<HTMLTextAreaElement>(null);
 
   // Form state
   const [title, setTitle] = useState(event?.title ?? '');
@@ -56,9 +57,20 @@ export function EventModal({
     event?.recurrence ?? null
   );
 
+  // Track focused field for icon highlighting
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
   useEffect(() => {
     setTimeout(() => titleRef.current?.focus(), 50);
   }, []);
+
+  // Auto-grow textarea
+  useEffect(() => {
+    if (descRef.current) {
+      descRef.current.style.height = 'auto';
+      descRef.current.style.height = descRef.current.scrollHeight + 'px';
+    }
+  }, [description]);
 
   const setTag = (tag: string) => {
     if (category === tag) {
@@ -123,13 +135,19 @@ export function EventModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] animate-[modalFadeIn_0.2s_ease-out]"
+      className="fixed inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-[1000] animate-[modalFadeIn_0.2s_ease-out]"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-gradient-to-br from-surface to-bg border border-white/[0.06] rounded-2xl w-[420px] max-h-[85vh] overflow-y-auto shadow-[0_24px_48px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.04)] animate-[modalSlideIn_0.25s_ease-out]">
-        <form onSubmit={handleSubmit} className="p-5">
+      <div className="bg-gradient-to-br from-surface to-bg border border-white/[0.06] rounded-2xl w-[440px] max-h-[85vh] overflow-y-auto shadow-[0_24px_48px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04),0_0_80px_rgba(74,144,217,0.06)] animate-[modalSlideIn_0.25s_ease-out]">
+        {/* Color accent bar */}
+        <div
+          className="h-1.5 rounded-t-2xl transition-colors duration-300"
+          style={{ backgroundColor: color }}
+        />
+
+        <form onSubmit={handleSubmit} className="p-6">
           {/* Title */}
-          <div className="flex items-stretch mb-2.5">
+          <div className="flex items-stretch mb-1">
             <div className="w-[30px] shrink-0" />
             <input
               ref={titleRef}
@@ -138,25 +156,25 @@ export function EventModal({
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Event title"
               required
-              className="flex-1 text-xl font-medium py-3 bg-transparent border-none border-b border-white/[0.08] rounded-none focus:outline-none focus:border-accent placeholder:text-[#445]"
+              className="flex-1 text-[1.35rem] font-semibold py-3 bg-transparent border-b-2 border-white/[0.08] rounded-none focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677]"
             />
           </div>
 
           {/* Category tags */}
-          <div className="flex gap-2 mb-2.5 ml-[30px]">
+          <div className="flex gap-2.5 mb-5 ml-[30px] mt-3">
             {Object.entries(CATEGORY_COLORS).map(([tag, tagColor]) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => setTag(tag)}
-                className={`px-4 py-1.5 rounded-full border text-sm font-medium cursor-pointer transition-all ${
+                className={`px-4 py-2 rounded-full border-[1.5px] text-[0.85rem] font-semibold cursor-pointer transition-all duration-200 ${
                   category === tag
-                    ? 'text-white'
-                    : 'border-white/10 bg-transparent text-text-muted hover:border-white/25 hover:text-text'
+                    ? 'text-white shadow-[0_0_12px_rgba(74,144,217,0.25)] scale-[1.02]'
+                    : 'border-white/10 bg-transparent text-text-muted hover:border-white/25 hover:text-text hover:scale-[1.02]'
                 }`}
                 style={
                   category === tag
-                    ? { backgroundColor: tagColor, borderColor: tagColor }
+                    ? { backgroundColor: tagColor, borderColor: tagColor, boxShadow: `0 0 14px ${tagColor}33` }
                     : undefined
                 }
               >
@@ -164,6 +182,9 @@ export function EventModal({
               </button>
             ))}
           </div>
+
+          {/* Divider */}
+          <div className="h-px bg-white/[0.06] mx-1 mb-4" />
 
           {/* Date/Time picker */}
           <DateTimePicker
@@ -173,10 +194,15 @@ export function EventModal({
             onEndChange={setEndDateTime}
           />
 
+          {/* Divider */}
+          <div className="h-px bg-white/[0.06] mx-1 mb-4 mt-1.5" />
+
           {/* Description */}
-          <div className="flex items-center gap-2.5 mb-2.5">
+          <div className="flex items-start gap-2.5 mb-4 group">
             <svg
-              className="w-5 h-5 text-text-muted shrink-0"
+              className={`w-5 h-5 shrink-0 mt-2.5 transition-colors duration-200 ${
+                focusedField === 'desc' ? 'text-accent' : 'text-text-muted group-hover:text-text/60'
+              }`}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -186,19 +212,24 @@ export function EventModal({
               <line x1="3" y1="12" x2="21" y2="12" />
               <line x1="3" y1="18" x2="15" y2="18" />
             </svg>
-            <input
-              type="text"
+            <textarea
+              ref={descRef}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              onFocus={() => setFocusedField('desc')}
+              onBlur={() => setFocusedField(null)}
               placeholder="Add description"
-              className="flex-1 border-none bg-transparent py-2.5 border-b border-white/[0.08] rounded-none text-[0.95rem] focus:outline-none focus:border-accent placeholder:text-[#556]"
+              rows={1}
+              className="flex-1 bg-transparent py-2.5 border-b-[1.5px] border-white/[0.08] rounded-none text-[0.95rem] focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677] resize-none overflow-hidden"
             />
           </div>
 
           {/* Location */}
-          <div className="flex items-center gap-2.5 mb-2.5">
+          <div className="flex items-center gap-2.5 mb-4 group">
             <svg
-              className="w-5 h-5 text-text-muted shrink-0"
+              className={`w-5 h-5 shrink-0 transition-colors duration-200 ${
+                focusedField === 'loc' ? 'text-accent' : 'text-text-muted group-hover:text-text/60'
+              }`}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -211,10 +242,15 @@ export function EventModal({
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
+              onFocus={() => setFocusedField('loc')}
+              onBlur={() => setFocusedField(null)}
               placeholder="Add location"
-              className="flex-1 border-none bg-transparent py-2.5 border-b border-white/[0.08] rounded-none text-[0.95rem] focus:outline-none focus:border-accent placeholder:text-[#556]"
+              className="flex-1 border-none bg-transparent py-2.5 border-b-[1.5px] border-white/[0.08] rounded-none text-[0.95rem] focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677]"
             />
           </div>
+
+          {/* Divider */}
+          <div className="h-px bg-white/[0.06] mx-1 mb-4" />
 
           {/* Recurrence */}
           <RecurrencePicker
@@ -224,12 +260,12 @@ export function EventModal({
           />
 
           {/* Actions */}
-          <div className="flex gap-2.5 mt-3.5 justify-end">
+          <div className="flex gap-3 mt-5 justify-end">
             {isEditing && (
               <button
                 type="button"
                 onClick={handleDelete}
-                className="mr-auto bg-transparent text-[#e05555] border border-[rgba(224,85,85,0.3)] px-5 py-2.5 rounded-lg cursor-pointer text-sm hover:bg-[rgba(224,85,85,0.1)] hover:border-[#e05555] transition-all"
+                className="mr-auto bg-transparent text-[#e05555] border-[1.5px] border-[rgba(224,85,85,0.25)] px-5 py-2.5 rounded-xl cursor-pointer text-sm font-medium hover:bg-[rgba(224,85,85,0.1)] hover:border-[#e05555] transition-all duration-200"
               >
                 Delete
               </button>
@@ -237,13 +273,13 @@ export function EventModal({
             <button
               type="button"
               onClick={onClose}
-              className="bg-transparent text-text-muted border border-white/[0.08] px-5 py-2.5 rounded-lg cursor-pointer text-sm hover:border-white/20 hover:text-text transition-all"
+              className="bg-transparent text-text-muted border-[1.5px] border-white/[0.08] px-5 py-2.5 rounded-xl cursor-pointer text-sm font-medium hover:border-white/20 hover:text-text transition-all duration-200"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-gradient-to-br from-accent to-accent-hover text-white border-none px-7 py-2.5 rounded-lg cursor-pointer text-sm font-medium hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(74,144,217,0.3)] transition-all"
+              className="bg-gradient-to-br from-accent to-accent-hover text-white border-none px-8 py-2.5 rounded-xl cursor-pointer text-sm font-semibold hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(74,144,217,0.35)] active:translate-y-0 transition-all duration-200"
             >
               Save
             </button>
