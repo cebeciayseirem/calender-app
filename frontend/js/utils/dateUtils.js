@@ -26,7 +26,7 @@ export function getDaysInMonth(year, month) {
 }
 
 export function formatTime(date) {
-    return date.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 }
 
 export function startOfDay(date) {

@@ -81,7 +81,25 @@ function advanceDate(date, rec) {
                 d.setDate(d.getDate() + 7 * rec.interval);
             }
             break;
-        case 'monthly': d.setMonth(d.getMonth() + rec.interval); break;
+        case 'monthly':
+            if (rec.monthlyMode === 'nthWeekday' && rec.nthWeekday) {
+                // Advance to the nth weekday of the next target month
+                d.setMonth(d.getMonth() + rec.interval, 1);
+                const targetWeekday = rec.nthWeekday.weekday;
+                const nth = rec.nthWeekday.nth;
+                // Find the first occurrence of the target weekday
+                let firstOccurrence = new Date(d);
+                while (firstOccurrence.getDay() !== targetWeekday) {
+                    firstOccurrence.setDate(firstOccurrence.getDate() + 1);
+                }
+                // Advance to the nth occurrence
+                firstOccurrence.setDate(firstOccurrence.getDate() + nth * 7);
+                d.setDate(firstOccurrence.getDate());
+                d.setHours(date.getHours(), date.getMinutes(), date.getSeconds());
+            } else {
+                d.setMonth(d.getMonth() + rec.interval);
+            }
+            break;
         case 'yearly': d.setFullYear(d.getFullYear() + rec.interval); break;
     }
     return d;

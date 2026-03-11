@@ -40,9 +40,18 @@ def get_events():
     return jsonify(events)
 
 
+def validate_event(data):
+    if data.get('start') and data.get('end') and data['end'] <= data['start']:
+        return 'End date/time must be after start date/time'
+    return None
+
+
 @app.route('/api/events', methods=['POST'])
 def create_event():
     data = request.get_json()
+    err = validate_event(data)
+    if err:
+        return jsonify({'error': err}), 400
     data['id'] = str(uuid.uuid4())
     events = read_events()
     events.append(data)
@@ -74,6 +83,9 @@ def get_event(event_id):
 @app.route('/api/events/<event_id>', methods=['PUT'])
 def update_event(event_id):
     data = request.get_json()
+    err = validate_event(data)
+    if err:
+        return jsonify({'error': err}), 400
     events = read_events()
     for i, e in enumerate(events):
         if e['id'] == event_id:

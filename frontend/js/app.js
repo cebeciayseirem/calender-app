@@ -5,7 +5,6 @@ import { renderWeekly } from './views/weekly.js';
 import { renderDaily } from './views/daily.js';
 import { expandRecurrences } from './utils/recurrence.js';
 import { toLocalISO } from './utils/dateUtils.js';
-import { setupDragDrop } from './components/dragDrop.js';
 import { setupEventForm } from './components/eventForm.js';
 
 // Re-export API functions for use by other modules
@@ -98,7 +97,7 @@ function updateNavTitle() {
             break;
         case 'weekly':
         case 'daily':
-            el.textContent = d.toLocaleDateString(undefined, {
+            el.textContent = d.toLocaleDateString('en-GB', {
                 weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
             });
             break;
@@ -160,13 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadEvents();
     });
 
-    // Dark mode toggle
-    document.getElementById('btn-dark-mode').addEventListener('click', () => {
-        const darkSheet = document.getElementById('dark-theme');
-        darkSheet.disabled = !darkSheet.disabled;
-        document.body.classList.toggle('dark');
-    });
-
     // Search input
     const searchInput = document.getElementById('search-input');
     let searchTimeout;
@@ -197,9 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event form (create/edit/delete)
     setupEventForm(loadEvents);
-
-    // Drag-and-drop for event blocks
-    setupDragDrop(loadEvents);
 
     // Initial render
     loadEvents();

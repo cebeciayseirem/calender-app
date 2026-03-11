@@ -98,5 +98,16 @@ export function renderMonthly(container, state) {
         wrapper.appendChild(weekRow);
     }
 
+    // Add task FAB button
+    const fab = document.createElement('button');
+    fab.className = 'fab-add';
+    fab.textContent = '+';
+    fab.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('open-event-form', {
+            detail: { date: new Date() }
+        }));
+    });
+    wrapper.appendChild(fab);
+
     container.appendChild(wrapper);
 }

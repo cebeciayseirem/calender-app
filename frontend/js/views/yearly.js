@@ -12,7 +12,7 @@ export function renderYearly(container, state) {
 
         const title = document.createElement('div');
         title.className = 'mini-month-title';
-        title.textContent = new Date(year, month).toLocaleString('default', { month: 'long' });
+        title.textContent = new Date(year, month).toLocaleString('en-GB', { month: 'long' });
         title.addEventListener('click', () => {
             window.dispatchEvent(new CustomEvent('navigate', { detail: { view: 'monthly', date: new Date(year, month, 1) } }));
         });
@@ -66,6 +66,17 @@ export function renderYearly(container, state) {
         miniMonth.appendChild(grid);
         wrapper.appendChild(miniMonth);
     }
+
+    // Add task FAB button
+    const fab = document.createElement('button');
+    fab.className = 'fab-add';
+    fab.textContent = '+';
+    fab.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('open-event-form', {
+            detail: { date: new Date() }
+        }));
+    });
+    wrapper.appendChild(fab);
 
     container.appendChild(wrapper);
 }

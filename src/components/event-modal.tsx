@@ -167,7 +167,7 @@ export function EventModal({
                 key={tag}
                 type="button"
                 onClick={() => setTag(tag)}
-                className={`px-4 py-2 rounded-full border-[1.5px] text-[0.85rem] font-semibold cursor-pointer transition-all duration-200 ${
+                className={`px-4 py-2 rounded-lg border-[1.5px] text-[0.95rem] font-medium cursor-pointer transition-all duration-200 ${
                   category === tag
                     ? 'text-white shadow-[0_0_12px_rgba(74,144,217,0.25)] scale-[1.02]'
                     : 'border-white/10 bg-transparent text-text-muted hover:border-white/25 hover:text-text hover:scale-[1.02]'
@@ -183,9 +183,6 @@ export function EventModal({
             ))}
           </div>
 
-          {/* Divider */}
-          <div className="h-px bg-white/[0.06] mx-1 mb-4" />
-
           {/* Date/Time picker */}
           <DateTimePicker
             startDateTime={startDateTime}
@@ -193,9 +190,6 @@ export function EventModal({
             onStartChange={setStartDateTime}
             onEndChange={setEndDateTime}
           />
-
-          {/* Divider */}
-          <div className="h-px bg-white/[0.06] mx-1 mb-4 mt-1.5" />
 
           {/* Description */}
           <div className="flex items-start gap-2.5 mb-4 group">
@@ -220,7 +214,7 @@ export function EventModal({
               onBlur={() => setFocusedField(null)}
               placeholder="Add description"
               rows={1}
-              className="flex-1 bg-transparent py-2.5 border-b-[1.5px] border-white/[0.08] rounded-none text-[0.95rem] focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677] resize-none overflow-hidden"
+              className="flex-1 bg-transparent py-2.5 border-b-[1.5px] border-white/[0.08] rounded-none text-[0.95rem] leading-normal font-[inherit] focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677] resize-none overflow-hidden"
             />
           </div>
 
@@ -245,12 +239,9 @@ export function EventModal({
               onFocus={() => setFocusedField('loc')}
               onBlur={() => setFocusedField(null)}
               placeholder="Add location"
-              className="flex-1 border-none bg-transparent py-2.5 border-b-[1.5px] border-white/[0.08] rounded-none text-[0.95rem] focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677]"
+              className="flex-1 bg-transparent py-2.5 border-b-[1.5px] border-white/[0.08] rounded-none text-[0.95rem] focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677]"
             />
           </div>
-
-          {/* Divider */}
-          <div className="h-px bg-white/[0.06] mx-1 mb-4" />
 
           {/* Recurrence */}
           <RecurrencePicker

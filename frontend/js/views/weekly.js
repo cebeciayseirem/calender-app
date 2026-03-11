@@ -1,5 +1,4 @@
-import { getMonday, isSameDay, formatTime, startOfDay } from '../utils/dateUtils.js';
-import { calculateOverlapLayout } from '../utils/overlap.js';
+import { getMonday, isSameDay, formatTime } from '../utils/dateUtils.js';
 
 export function renderWeekly(container, state) {
     const monday = getMonday(state.currentDate);
@@ -19,7 +18,7 @@ export function renderWeekly(container, state) {
         if (isSameDay(day, today)) {
             header.classList.add('today');
         }
-        header.textContent = day.toLocaleDateString('default', { weekday: 'short', day: 'numeric' });
+        header.textContent = day.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
         header.addEventListener('click', () => {
             window.dispatchEvent(new CustomEvent('navigate', { detail: { view: 'daily', date: day } }));
         });
@@ -28,41 +27,26 @@ export function renderWeekly(container, state) {
         const dayBody = document.createElement('div');
         dayBody.className = 'week-day-body';
 
-        const dayEvents = state.events.filter(e => isSameDay(new Date(e.start), day));
+        const dayEvents = state.events
+            .filter(e => isSameDay(new Date(e.start), day))
+            .sort((a, b) => new Date(a.start) - new Date(b.start));
 
-        if (dayEvents.length > 0) {
-            const layout = calculateOverlapLayout(dayEvents);
-            const dayStart = startOfDay(day).getTime();
-            const msPerDay = 24 * 60 * 60 * 1000;
+        for (const event of dayEvents) {
+            const startTime = formatTime(new Date(event.start));
+            const endTime = formatTime(new Date(event.end));
 
-            for (const { event, column, totalColumns } of layout) {
-                const eStart = new Date(event.start).getTime();
-                const eEnd = new Date(event.end).getTime();
-                const topPercent = ((eStart - dayStart) / msPerDay) * 100;
-                const heightPercent = ((eEnd - eStart) / msPerDay) * 100;
-                const widthPercent = 100 / totalColumns;
-                const leftPercent = column * widthPercent;
-
-                const block = document.createElement('div');
-                block.className = 'event-block';
-                block.style.cssText = `
-                    position: absolute;
-                    top: ${topPercent}%;
-                    height: ${heightPercent}%;
-                    left: ${leftPercent}%;
-                    width: ${widthPercent}%;
-                    background-color: ${event.color || '#4A90D9'};
-                `;
-                block.dataset.eventId = event.id;
-                block.innerHTML = `<span class="event-title">${event.title}</span>`;
-                block.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    window.dispatchEvent(new CustomEvent('open-event-form', {
-                        detail: { event }
-                    }));
-                });
-                dayBody.appendChild(block);
-            }
+            const block = document.createElement('div');
+            block.className = 'event-block week-event-card';
+            block.style.backgroundColor = event.color || '#4A90D9';
+            block.dataset.eventId = event.id;
+            block.innerHTML = `<span class="event-title">${event.title}</span><span class="event-time">${startTime} – ${endTime}</span>`;
+            block.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.dispatchEvent(new CustomEvent('open-event-form', {
+                    detail: { event }
+                }));
+            });
+            dayBody.appendChild(block);
         }
 
         dayBody.addEventListener('click', (e) => {
@@ -77,6 +61,17 @@ export function renderWeekly(container, state) {
         col.appendChild(dayBody);
         wrapper.appendChild(col);
     }
+
+    // Add task FAB button
+    const fab = document.createElement('button');
+    fab.className = 'fab-add';
+    fab.textContent = '+';
+    fab.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('open-event-form', {
+            detail: { date: new Date() }
+        }));
+    });
+    wrapper.appendChild(fab);
 
     container.appendChild(wrapper);
 }

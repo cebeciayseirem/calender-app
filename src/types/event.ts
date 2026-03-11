@@ -43,8 +43,8 @@ export interface EventFormData {
 }
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  Work: '#74d5ff',
-  Health: '#f16c76',
-  Errand: '#b8d4e3',
-  Social: '#d4a5ff',
+  Work: '#c67703',
+  Health: '#0070f3',
+  Errand: '#366337',
+  Social: '#9C27B0',
 };

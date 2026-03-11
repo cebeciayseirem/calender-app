@@ -155,7 +155,7 @@ git add server/
 git commit -m "feat: add Flask server with CRUD API and JSON storage"
 ```
 
----
+---z
 
 ## Task 2: Frontend Shell — HTML, Navigation & App State
 
