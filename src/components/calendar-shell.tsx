@@ -83,7 +83,7 @@ export function CalendarShell() {
         onSearchChange={setSearchQuery}
       />
 
-      <main className="mt-[56px] relative" style={{ height: 'calc(100vh - 56px - 64px)' }}>
+      <main className="mt-[56px] relative overflow-hidden" style={{ height: 'calc(100vh - 56px - 64px)' }}>
         <div className="p-4 h-full overflow-hidden">
           {view === 'yearly' && <YearlyView {...viewProps} />}
           {view === 'monthly' && <MonthlyView {...viewProps} />}
