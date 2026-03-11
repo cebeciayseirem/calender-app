@@ -62,19 +62,22 @@ export function WeeklyView({
   });
 
   return (
-    <div className="h-full flex flex-col overflow-clip rounded-lg border border-border bg-surface">
-      {/* Fixed day headers */}
+    <div
+      ref={scrollRef}
+      className="h-full overflow-y-auto rounded-lg border border-border bg-surface"
+    >
       <div
-        className="grid shrink-0 border-b border-border"
+        className="grid"
         style={{ gridTemplateColumns: '48px repeat(7, 1fr)' }}
       >
-        <div /> {/* Empty corner cell */}
+        {/* Sticky day headers */}
+        <div className="sticky top-0 z-10 bg-surface border-b border-border" />
         {days.map((day, i) => {
           const isToday = isSameDay(day, today);
           return (
             <div
               key={i}
-              className={`relative text-center py-1.5 px-2 cursor-pointer transition-colors hover:bg-white/[0.03] border-r border-border last:border-r-0 ${
+              className={`sticky top-0 z-10 bg-surface text-center py-1.5 px-2 cursor-pointer transition-colors hover:bg-white/[0.03] border-b border-border border-r border-r-border last:border-r-0 ${
                 isToday ? 'bg-white/[0.02]' : ''
               }`}
               onClick={() => onNavigate('daily', day)}
@@ -95,29 +98,19 @@ export function WeeklyView({
             </div>
           );
         })}
-      </div>
 
-      {/* Scrollable hour grid */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto"
-      >
-        <div
-          className="grid"
-          style={{ gridTemplateColumns: '48px repeat(7, 1fr)' }}
-        >
-          {HOURS.map((hour) => (
-            <HourRow
-              key={hour}
-              hour={hour}
-              days={days}
-              today={today}
-              eventMap={eventMap}
-              onEventClick={onEventClick}
-              onEmptyClick={onEmptyClick}
-            />
-          ))}
-        </div>
+        {/* Hour rows */}
+        {HOURS.map((hour) => (
+          <HourRow
+            key={hour}
+            hour={hour}
+            days={days}
+            today={today}
+            eventMap={eventMap}
+            onEventClick={onEventClick}
+            onEmptyClick={onEmptyClick}
+          />
+        ))}
       </div>
     </div>
   );
