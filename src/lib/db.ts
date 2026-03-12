@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from './schema';
-import { seedEvents } from './seed-events';
+import { seedEvents, seedHabits } from './seed-events';
 import path from 'path';
 import fs from 'fs';
 
@@ -58,6 +58,7 @@ function createDb() {
   try { sqlite.exec("ALTER TABLE habits ADD COLUMN recurrence TEXT"); } catch {}
 
   seedEvents(sqlite);
+  seedHabits(sqlite);
 
   return drizzle(sqlite, { schema });
 }
