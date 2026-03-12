@@ -1,6 +1,5 @@
 import type { CalendarEvent, EventFormData } from '@/types/event';
 import type { Habit, HabitFormData } from '@/types/habit';
-import type { Category } from '@/types/category';
 
 const API_BASE = '/api';
 
@@ -89,20 +88,3 @@ export async function toggleHabit(id: string, date?: string): Promise<{ complete
   return res.json();
 }
 
-// Categories API
-
-export async function fetchCategories(): Promise<Category[]> {
-  const res = await fetch(`${API_BASE}/categories`);
-  if (!res.ok) throw new Error('Failed to fetch categories');
-  return res.json();
-}
-
-export async function createCategory(name: string): Promise<Category> {
-  const res = await fetch(`${API_BASE}/categories`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name }),
-  });
-  if (!res.ok) throw new Error('Failed to create category');
-  return res.json();
-}

@@ -16,22 +16,14 @@ function createDb() {
   sqlite.pragma('busy_timeout = 5000');
   sqlite.pragma('foreign_keys = ON');
   sqlite.exec(`
-    CREATE TABLE IF NOT EXISTS categories (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL UNIQUE,
-      is_default INTEGER NOT NULL DEFAULT 0,
-      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-    );
     CREATE TABLE IF NOT EXISTS habits (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
       subtitle TEXT,
-      icon TEXT NOT NULL DEFAULT '✅',
-      color TEXT NOT NULL DEFAULT '#4A90D9',
+      category TEXT,
       frequency_type TEXT NOT NULL DEFAULT 'daily',
       frequency_days TEXT,
       frequency_count INTEGER,
-      category_id TEXT REFERENCES categories(id),
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
@@ -44,17 +36,11 @@ function createDb() {
     );
   `);
 
-  // Seed default categories
-  const defaultCategories = ['Health', 'Fitness', 'Learning', 'Mindfulness', 'Productivity'];
-  for (const name of defaultCategories) {
-    sqlite.exec(`INSERT OR IGNORE INTO categories (id, name, is_default) VALUES ('${name.toLowerCase()}', '${name}', 1)`);
-  }
-
-  // Migration: add new columns to existing habits table if missing
-  try { sqlite.exec('ALTER TABLE habits ADD COLUMN frequency_type TEXT NOT NULL DEFAULT \'daily\''); } catch {}
-  try { sqlite.exec('ALTER TABLE habits ADD COLUMN frequency_days TEXT'); } catch {}
-  try { sqlite.exec('ALTER TABLE habits ADD COLUMN frequency_count INTEGER'); } catch {}
-  try { sqlite.exec('ALTER TABLE habits ADD COLUMN category_id TEXT REFERENCES categories(id)'); } catch {}
+  // Migration: add category column to existing habits table if missing
+  try { sqlite.exec("ALTER TABLE habits ADD COLUMN category TEXT"); } catch {}
+  try { sqlite.exec("ALTER TABLE habits ADD COLUMN frequency_type TEXT NOT NULL DEFAULT 'daily'"); } catch {}
+  try { sqlite.exec("ALTER TABLE habits ADD COLUMN frequency_days TEXT"); } catch {}
+  try { sqlite.exec("ALTER TABLE habits ADD COLUMN frequency_count INTEGER"); } catch {}
   return drizzle(sqlite, { schema });
 }
 

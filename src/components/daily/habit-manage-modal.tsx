@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useHabits, useCreateHabit, useUpdateHabit, useDeleteHabit } from '@/hooks/use-habits';
 import { HabitEditForm } from './habit-edit-form';
-import { CategoryBadge } from './category-badge';
+import { CATEGORY_COLORS } from '@/types/event';
 import type { Habit, HabitFormData } from '@/types/habit';
 
 interface HabitManageModalProps {
@@ -127,9 +127,8 @@ export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
                   >
                     <div
                       className="w-2 h-9 rounded-full shrink-0"
-                      style={{ backgroundColor: habit.color }}
+                      style={{ backgroundColor: habit.category ? CATEGORY_COLORS[habit.category] || '#4A90D9' : '#4A90D9' }}
                     />
-                    <span className="text-base shrink-0">{habit.icon}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-text truncate">{habit.title}</p>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -137,7 +136,14 @@ export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
                           <p className="text-xs text-text-muted truncate">{habit.subtitle}</p>
                         )}
                         <span className="text-[10px] text-text-muted/60">{getFrequencyLabel(habit)}</span>
-                        {habit.category && <CategoryBadge name={habit.category.name} />}
+                        {habit.category && (
+                          <span
+                            className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                            style={{ backgroundColor: `${CATEGORY_COLORS[habit.category]}30`, color: CATEGORY_COLORS[habit.category] }}
+                          >
+                            {habit.category}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <button

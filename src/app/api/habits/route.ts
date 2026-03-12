@@ -1,28 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { habits, habitCompletions, categories } from '@/lib/schema';
+import { habits, habitCompletions } from '@/lib/schema';
 import { v4 as uuidv4 } from 'uuid';
 import { eq, and } from 'drizzle-orm';
 import { format } from 'date-fns';
-
-function lookupCategory(categoryId: string | null) {
-  if (!categoryId) return null;
-  const cat = db.select().from(categories).where(eq(categories.id, categoryId)).get();
-  if (!cat) return null;
-  return { id: cat.id, name: cat.name, isDefault: !!cat.isDefault };
-}
 
 function formatHabit(habit: typeof habits.$inferSelect, completedToday: boolean) {
   return {
     id: habit.id,
     title: habit.title,
     subtitle: habit.subtitle,
-    icon: habit.icon,
-    color: habit.color,
+    category: habit.category,
     frequencyType: habit.frequencyType,
     frequencyDays: habit.frequencyDays ? JSON.parse(habit.frequencyDays) : null,
     frequencyCount: habit.frequencyCount,
-    category: lookupCategory(habit.categoryId),
     completedToday,
   };
 }
@@ -55,12 +46,10 @@ export async function POST(request: NextRequest) {
       id,
       title: body.title,
       subtitle: body.subtitle || null,
-      icon: body.icon || '✅',
-      color: body.color || '#4A90D9',
+      category: body.category || null,
       frequencyType: body.frequencyType || 'daily',
       frequencyDays: body.frequencyDays ? JSON.stringify(body.frequencyDays) : null,
       frequencyCount: body.frequencyCount ?? null,
-      categoryId: body.categoryId || null,
       createdAt: now,
       updatedAt: now,
     })

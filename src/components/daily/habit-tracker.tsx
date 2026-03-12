@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useHabits, useToggleHabit } from '@/hooks/use-habits';
 import { HabitManageModal } from './habit-manage-modal';
-import { CategoryBadge } from './category-badge';
+import { CATEGORY_COLORS } from '@/types/event';
 
 interface HabitTrackerProps {
   date: string;
@@ -39,7 +39,7 @@ export function HabitTracker({ date }: HabitTrackerProps) {
           >
             <div
               className="w-2 h-9 rounded-full shrink-0"
-              style={{ backgroundColor: habit.color }}
+              style={{ backgroundColor: habit.category ? CATEGORY_COLORS[habit.category] || '#4A90D9' : '#4A90D9' }}
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-text truncate">{habit.title}</p>
@@ -47,7 +47,14 @@ export function HabitTracker({ date }: HabitTrackerProps) {
                 {habit.subtitle && (
                   <p className="text-xs text-text-muted truncate">{habit.subtitle}</p>
                 )}
-                {habit.category && <CategoryBadge name={habit.category.name} />}
+                {habit.category && (
+                  <span
+                    className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                    style={{ backgroundColor: `${CATEGORY_COLORS[habit.category]}30`, color: CATEGORY_COLORS[habit.category] }}
+                  >
+                    {habit.category}
+                  </span>
+                )}
               </div>
             </div>
             <button
