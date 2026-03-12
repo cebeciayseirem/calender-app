@@ -72,9 +72,12 @@ export function DailyTimeline({ events, currentDate, onEventClick, onAddEvent }:
               return (
                 <div key={event.id + event.start} className="flex gap-4">
                   {/* Time label */}
-                  <div className="w-[72px] shrink-0 pt-4 text-right">
+                  <div className="w-[72px] shrink-0 pt-3 text-right">
                     <span className={`text-xs font-medium ${isCurrent ? 'text-accent' : 'text-text-muted'}`}>
                       {format(startTime, 'hh:mm a')}
+                    </span>
+                    <span className="block text-[10px] text-text-muted/50 mt-0.5">
+                      {format(endTime, 'hh:mm a')}
                     </span>
                   </div>
 
