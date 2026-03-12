@@ -80,11 +80,9 @@ export function HabitTracker() {
             className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-3 py-3 group"
           >
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-base shrink-0"
-              style={{ backgroundColor: habit.color + '22' }}
-            >
-              {habit.icon}
-            </div>
+              className="w-2 h-9 rounded-full shrink-0"
+              style={{ backgroundColor: habit.color }}
+            />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-text truncate">{habit.title}</p>
               {habit.subtitle && (
