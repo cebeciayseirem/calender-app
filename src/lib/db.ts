@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from './schema';
+import { seedEvents } from './seed-events';
 import path from 'path';
 import fs from 'fs';
 
@@ -16,14 +17,30 @@ function createDb() {
   sqlite.pragma('busy_timeout = 5000');
   sqlite.pragma('foreign_keys = ON');
   sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS events (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      start TEXT NOT NULL,
+      end TEXT NOT NULL,
+      description TEXT,
+      location TEXT,
+      color TEXT NOT NULL DEFAULT '#74d5ff',
+      category TEXT,
+      rec_type TEXT,
+      rec_interval INTEGER,
+      rec_days TEXT,
+      rec_end_date TEXT,
+      rec_count INTEGER,
+      rec_monthly_mode TEXT,
+      created_at TEXT NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+      updated_at TEXT NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+    );
     CREATE TABLE IF NOT EXISTS habits (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
       subtitle TEXT,
       category TEXT,
-      frequency_type TEXT NOT NULL DEFAULT 'daily',
-      frequency_days TEXT,
-      frequency_count INTEGER,
+      recurrence TEXT,
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
@@ -36,11 +53,12 @@ function createDb() {
     );
   `);
 
-  // Migration: add category column to existing habits table if missing
+  // Migration: add columns to existing habits table if missing
   try { sqlite.exec("ALTER TABLE habits ADD COLUMN category TEXT"); } catch {}
-  try { sqlite.exec("ALTER TABLE habits ADD COLUMN frequency_type TEXT NOT NULL DEFAULT 'daily'"); } catch {}
-  try { sqlite.exec("ALTER TABLE habits ADD COLUMN frequency_days TEXT"); } catch {}
-  try { sqlite.exec("ALTER TABLE habits ADD COLUMN frequency_count INTEGER"); } catch {}
+  try { sqlite.exec("ALTER TABLE habits ADD COLUMN recurrence TEXT"); } catch {}
+
+  seedEvents(sqlite);
+
   return drizzle(sqlite, { schema });
 }
 

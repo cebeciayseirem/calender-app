@@ -28,9 +28,7 @@ export const habits = sqliteTable('habits', {
   title: text('title').notNull(),
   subtitle: text('subtitle'),
   category: text('category'),
-  frequencyType: text('frequency_type').notNull().default('daily'),
-  frequencyDays: text('frequency_days'),
-  frequencyCount: integer('frequency_count'),
+  recurrence: text('recurrence'),
   createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });

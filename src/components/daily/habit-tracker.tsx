@@ -43,19 +43,9 @@ export function HabitTracker({ date }: HabitTrackerProps) {
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-text truncate">{habit.title}</p>
-              <div className="flex items-center gap-2 mt-0.5">
-                {habit.subtitle && (
-                  <p className="text-xs text-text-muted truncate">{habit.subtitle}</p>
-                )}
-                {habit.category && (
-                  <span
-                    className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
-                    style={{ backgroundColor: `${CATEGORY_COLORS[habit.category]}30`, color: CATEGORY_COLORS[habit.category] }}
-                  >
-                    {habit.category}
-                  </span>
-                )}
-              </div>
+              {habit.subtitle && (
+                <p className="text-xs text-text-muted truncate mt-0.5">{habit.subtitle}</p>
+              )}
             </div>
             <button
               onClick={() => toggleHabit.mutate(habit.id)}

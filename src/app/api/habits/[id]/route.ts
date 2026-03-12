@@ -9,9 +9,7 @@ function formatHabit(habit: typeof habits.$inferSelect) {
     title: habit.title,
     subtitle: habit.subtitle,
     category: habit.category,
-    frequencyType: habit.frequencyType,
-    frequencyDays: habit.frequencyDays ? JSON.parse(habit.frequencyDays) : null,
-    frequencyCount: habit.frequencyCount,
+    recurrence: habit.recurrence ? JSON.parse(habit.recurrence) : null,
   };
 }
 
@@ -33,11 +31,9 @@ export async function PUT(
       title: body.title ?? existing.title,
       subtitle: body.subtitle ?? existing.subtitle,
       category: body.category !== undefined ? (body.category || null) : existing.category,
-      frequencyType: body.frequencyType ?? existing.frequencyType,
-      frequencyDays: body.frequencyDays
-        ? JSON.stringify(body.frequencyDays)
-        : existing.frequencyDays,
-      frequencyCount: body.frequencyCount ?? existing.frequencyCount,
+      recurrence: body.recurrence !== undefined
+        ? (body.recurrence ? JSON.stringify(body.recurrence) : null)
+        : existing.recurrence,
       updatedAt: now,
     })
     .where(eq(habits.id, id))

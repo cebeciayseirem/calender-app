@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useHabits, useCreateHabit, useUpdateHabit, useDeleteHabit } from '@/hooks/use-habits';
-import { HabitEditForm } from './habit-edit-form';
+import { HabitEditModal } from './habit-edit-modal';
 import { CATEGORY_COLORS } from '@/types/event';
 import type { Habit, HabitFormData } from '@/types/habit';
 
@@ -11,21 +11,20 @@ interface HabitManageModalProps {
   onClose: () => void;
 }
 
-const FREQUENCY_LABELS: Record<string, string> = {
-  daily: 'Daily',
-  weekdays: 'Weekdays',
-  weekends: 'Weekends',
-  custom: 'Custom',
-  x_per_week: 'X/week',
+const RECURRENCE_LABELS: Record<string, string> = {
+  daily: 'Every day',
+  weekly: 'Every week',
+  monthly: 'Every month',
+  yearly: 'Every year',
 };
 
 export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
-  const { data: habits = [] } = useHabits();
+  const { data: habits = [] } = useHabits(undefined, open);
   const createHabit = useCreateHabit();
   const updateHabit = useUpdateHabit();
   const deleteHabit = useDeleteHabit();
 
-  const [view, setView] = useState<'list' | 'edit'>('list');
+  const [showEditModal, setShowEditModal] = useState(false);
   const [editingHabitId, setEditingHabitId] = useState<string | null>(null);
 
   if (!open) return null;
@@ -36,12 +35,12 @@ export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
 
   const handleEdit = (habit: Habit) => {
     setEditingHabitId(habit.id);
-    setView('edit');
+    setShowEditModal(true);
   };
 
   const handleAdd = () => {
     setEditingHabitId(null);
-    setView('edit');
+    setShowEditModal(true);
   };
 
   const handleSave = async (data: HabitFormData) => {
@@ -50,64 +49,46 @@ export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
     } else {
       await createHabit.mutateAsync(data);
     }
-    setView('list');
+    setShowEditModal(false);
     setEditingHabitId(null);
   };
 
-  const handleBack = () => {
-    setView('list');
+  const handleEditClose = () => {
+    setShowEditModal(false);
     setEditingHabitId(null);
   };
 
-  const handleClose = () => {
-    setView('list');
-    setEditingHabitId(null);
-    onClose();
-  };
-
-  const getFrequencyLabel = (habit: Habit) => {
-    if (habit.frequencyType === 'x_per_week' && habit.frequencyCount) {
-      return `${habit.frequencyCount}x/week`;
-    }
-    return FREQUENCY_LABELS[habit.frequencyType] || 'Daily';
+  const getRecurrenceLabel = (habit: Habit) => {
+    if (!habit.recurrence) return 'Does not repeat';
+    const rec = habit.recurrence;
+    if (rec.interval === 1) return RECURRENCE_LABELS[rec.type] || rec.type;
+    return `Every ${rec.interval} ${rec.type.replace('ly', '')}s`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={handleClose}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+    <>
       <div
-        className="relative bg-surface border border-border rounded-2xl w-[420px] max-h-[80vh] shadow-xl flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-[1000] animate-[modalFadeIn_0.2s_ease-out]"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 pb-3 border-b border-border">
-          {view === 'edit' && (
-            <button
-              onClick={handleBack}
-              className="w-8 h-8 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] flex items-center justify-center transition-colors mr-2"
-            >
-              <svg className="w-4 h-4 text-text" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
-            </button>
-          )}
-          <h3 className="text-base font-bold text-text flex-1">
-            {view === 'list' ? 'Manage Habits' : editingHabitId ? 'Edit Habit' : 'New Habit'}
-          </h3>
-          {view === 'list' && (
+        <div
+          className="bg-gradient-to-br from-surface to-bg border border-white/[0.06] rounded-2xl w-[440px] max-h-[85vh] shadow-[0_24px_48px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04),0_0_80px_rgba(74,144,217,0.06)] animate-[modalSlideIn_0.25s_ease-out] flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 pb-3">
+            <h3 className="text-base font-bold text-text flex-1">Manage Habits</h3>
             <button
               onClick={handleAdd}
               className="px-3 py-1.5 bg-accent hover:bg-accent-hover text-white text-xs rounded-lg transition-colors"
             >
               + Add Habit
             </button>
-          )}
-        </div>
+          </div>
 
-        {/* Content */}
-        <div className="p-5 overflow-y-auto">
-          {view === 'list' ? (
-            habits.length === 0 ? (
+          {/* Habit List */}
+          <div className="p-6 pt-3 overflow-y-auto">
+            {habits.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-sm text-text-muted mb-3">No habits yet</p>
                 <button
@@ -135,7 +116,7 @@ export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
                         {habit.subtitle && (
                           <p className="text-xs text-text-muted truncate">{habit.subtitle}</p>
                         )}
-                        <span className="text-[10px] text-text-muted/60">{getFrequencyLabel(habit)}</span>
+                        <span className="text-[10px] text-text-muted/60">{getRecurrenceLabel(habit)}</span>
                         {habit.category && (
                           <span
                             className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
@@ -159,17 +140,19 @@ export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
                   </div>
                 ))}
               </div>
-            )
-          ) : (
-            <HabitEditForm
-              habit={editingHabit}
-              onSave={handleSave}
-              onCancel={handleBack}
-              isSaving={createHabit.isPending || updateHabit.isPending}
-            />
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {showEditModal && (
+        <HabitEditModal
+          habit={editingHabit}
+          onSave={handleSave}
+          onClose={handleEditClose}
+          isSaving={createHabit.isPending || updateHabit.isPending}
+        />
+      )}
+    </>
   );
 }

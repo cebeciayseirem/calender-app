@@ -1,18 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { CATEGORY_COLORS } from '@/types/event';
+import type { RecurrenceConfig } from '@/types/event';
 import type { Habit, HabitFormData } from '@/types/habit';
-
-const FREQUENCY_PRESETS = [
-  { value: 'daily', label: 'Daily' },
-  { value: 'weekdays', label: 'Weekdays' },
-  { value: 'weekends', label: 'Weekends' },
-  { value: 'custom', label: 'Custom' },
-  { value: 'x_per_week', label: 'X per week' },
-] as const;
-
-const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+import { RecurrencePicker } from '../recurrence-picker';
 
 interface HabitEditFormProps {
   habit?: Habit | null;
@@ -22,12 +14,18 @@ interface HabitEditFormProps {
 }
 
 export function HabitEditForm({ habit, onSave, onCancel, isSaving }: HabitEditFormProps) {
+  const titleRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(habit?.title || '');
   const [subtitle, setSubtitle] = useState(habit?.subtitle || '');
   const [category, setCategory] = useState(habit?.category || '');
-  const [frequencyType, setFrequencyType] = useState(habit?.frequencyType || 'daily');
-  const [frequencyDays, setFrequencyDays] = useState<number[]>(habit?.frequencyDays || []);
-  const [frequencyCount, setFrequencyCount] = useState(habit?.frequencyCount || 3);
+  const [recurrence, setRecurrence] = useState<RecurrenceConfig | null>(
+    habit?.recurrence ?? null
+  );
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  useEffect(() => {
+    setTimeout(() => titleRef.current?.focus(), 50);
+  }, []);
 
   const handleSubmit = () => {
     if (!title.trim()) return;
@@ -35,129 +33,99 @@ export function HabitEditForm({ habit, onSave, onCancel, isSaving }: HabitEditFo
       title: title.trim(),
       subtitle: subtitle.trim() || undefined,
       category: category || undefined,
-      frequencyType,
-      frequencyDays: frequencyType === 'custom' ? frequencyDays : undefined,
-      frequencyCount: frequencyType === 'x_per_week' ? frequencyCount : undefined,
+      recurrence,
     });
-  };
-
-  const toggleDay = (day: number) => {
-    setFrequencyDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort()
-    );
   };
 
   const handleTagClick = (tag: string) => {
     setCategory(category === tag ? '' : tag);
   };
 
+  const tagColor = category ? CATEGORY_COLORS[category] || '#4A90D9' : '#4A90D9';
+
   return (
-    <div className="flex flex-col gap-4">
+    <div>
+      {/* Color accent bar */}
+      <div
+        className="h-1.5 rounded-t-2xl transition-colors duration-300 -mx-6 -mt-6 mb-5"
+        style={{ backgroundColor: tagColor }}
+      />
+
       {/* Title */}
-      <div>
-        <label className="text-xs font-medium text-text-muted mb-1 block">Title *</label>
+      <div className="flex items-stretch mb-1">
+        <div className="w-[30px] shrink-0" />
         <input
+          ref={titleRef}
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Habit name..."
-          autoFocus
-          className="w-full bg-white/[0.06] border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-muted/50 outline-none focus:border-accent"
+          placeholder="Habit title"
+          className="flex-1 text-[1.35rem] font-semibold py-3 bg-transparent border-b-2 border-white/[0.08] rounded-none focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677]"
         />
       </div>
 
-      {/* Subtitle */}
-      <div>
-        <label className="text-xs font-medium text-text-muted mb-1 block">Subtitle</label>
+      {/* Category tags */}
+      <div className="flex gap-2.5 mb-5 ml-[30px] mt-3">
+        {Object.entries(CATEGORY_COLORS).map(([tag, tc]) => (
+          <button
+            key={tag}
+            type="button"
+            onClick={() => handleTagClick(tag)}
+            className={`px-4 py-2 rounded-lg border-[1.5px] text-[0.95rem] font-medium cursor-pointer transition-all duration-200 ${
+              category === tag
+                ? 'text-white shadow-[0_0_12px_rgba(74,144,217,0.25)] scale-[1.02]'
+                : 'border-white/10 bg-transparent text-text-muted hover:border-white/25 hover:text-text hover:scale-[1.02]'
+            }`}
+            style={
+              category === tag
+                ? { backgroundColor: tc, borderColor: tc, boxShadow: `0 0 14px ${tc}33` }
+                : undefined
+            }
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+
+      {/* Subtitle / Description */}
+      <div className="flex items-center gap-2.5 mb-4 group">
+        <svg
+          className={`w-5 h-5 shrink-0 transition-colors duration-200 ${
+            focusedField === 'subtitle' ? 'text-accent' : 'text-text-muted group-hover:text-text/60'
+          }`}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="15" y2="18" />
+        </svg>
         <input
           type="text"
           value={subtitle}
           onChange={(e) => setSubtitle(e.target.value)}
-          placeholder="Optional description..."
-          className="w-full bg-white/[0.06] border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-muted/50 outline-none focus:border-accent"
+          onFocus={() => setFocusedField('subtitle')}
+          onBlur={() => setFocusedField(null)}
+          placeholder="Add description"
+          className="flex-1 bg-transparent py-2.5 border-b-[1.5px] border-white/[0.08] rounded-none text-[0.95rem] focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677]"
         />
       </div>
 
-      {/* Tag */}
-      <div>
-        <label className="text-xs font-medium text-text-muted mb-1 block">Tag</label>
-        <div className="flex gap-1.5 flex-wrap">
-          {Object.entries(CATEGORY_COLORS).map(([tag, tagColor]) => (
-            <button
-              key={tag}
-              type="button"
-              onClick={() => handleTagClick(tag)}
-              className={`px-3 py-1.5 text-xs rounded-lg transition-all border ${
-                category === tag
-                  ? 'text-white border-transparent'
-                  : 'bg-white/[0.06] text-text-muted border-transparent hover:bg-white/[0.12]'
-              }`}
-              style={category === tag ? { backgroundColor: tagColor } : undefined}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Frequency */}
-      <div>
-        <label className="text-xs font-medium text-text-muted mb-1 block">Frequency</label>
-        <div className="flex gap-1.5 flex-wrap mb-2">
-          {FREQUENCY_PRESETS.map((preset) => (
-            <button
-              key={preset.value}
-              type="button"
-              onClick={() => setFrequencyType(preset.value)}
-              className={`px-3 py-1.5 text-xs rounded-lg transition-all ${
-                frequencyType === preset.value
-                  ? 'bg-accent text-white'
-                  : 'bg-white/[0.06] text-text-muted hover:bg-white/[0.12]'
-              }`}
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
-        {frequencyType === 'custom' && (
-          <div className="flex gap-1.5">
-            {DAY_LABELS.map((label, i) => (
-              <button
-                key={label}
-                type="button"
-                onClick={() => toggleDay(i + 1)}
-                className={`w-9 h-9 text-xs rounded-lg transition-all ${
-                  frequencyDays.includes(i + 1)
-                    ? 'bg-accent text-white'
-                    : 'bg-white/[0.06] text-text-muted hover:bg-white/[0.12]'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
-        {frequencyType === 'x_per_week' && (
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min={1}
-              max={7}
-              value={frequencyCount}
-              onChange={(e) => setFrequencyCount(Number(e.target.value))}
-              className="w-16 bg-white/[0.06] border border-border rounded-lg px-3 py-1.5 text-sm text-text outline-none focus:border-accent"
-            />
-            <span className="text-xs text-text-muted">times per week</span>
-          </div>
-        )}
-      </div>
+      {/* Recurrence */}
+      <RecurrencePicker
+        recurrence={recurrence}
+        startDateTime=""
+        onChange={setRecurrence}
+      />
 
       {/* Actions */}
-      <div className="flex gap-2 justify-end pt-2 border-t border-border">
+      <div className="flex gap-3 mt-5 justify-end">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.12] text-text-muted text-xs rounded-lg transition-colors"
+          className="bg-transparent text-text-muted border-[1.5px] border-white/[0.08] px-5 py-2.5 rounded-xl cursor-pointer text-sm font-medium hover:border-white/20 hover:text-text transition-all duration-200"
         >
           Cancel
         </button>
@@ -165,9 +133,9 @@ export function HabitEditForm({ habit, onSave, onCancel, isSaving }: HabitEditFo
           type="button"
           onClick={handleSubmit}
           disabled={!title.trim() || isSaving}
-          className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-xs rounded-lg transition-colors disabled:opacity-50"
+          className="bg-gradient-to-br from-accent to-accent-hover text-white border-none px-8 py-2.5 rounded-xl cursor-pointer text-sm font-semibold hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(74,144,217,0.35)] active:translate-y-0 transition-all duration-200 disabled:opacity-50"
         >
-          {isSaving ? 'Saving...' : habit ? 'Save Changes' : 'Create Habit'}
+          {isSaving ? 'Saving...' : 'Save'}
         </button>
       </div>
     </div>
