@@ -36,37 +36,46 @@ export function HabitTracker() {
       </div>
 
       {adding && (
-        <div className="mb-4 flex flex-col gap-2">
-          <input
-            type="text"
-            placeholder="Habit name..."
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-            autoFocus
-            className="w-full bg-white/[0.06] border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-muted/50 outline-none focus:border-accent"
-          />
-          <input
-            type="text"
-            placeholder="Subtitle (optional)..."
-            value={newSubtitle}
-            onChange={(e) => setNewSubtitle(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-            className="w-full bg-white/[0.06] border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-muted/50 outline-none focus:border-accent"
-          />
-          <div className="flex gap-2">
-            <button
-              onClick={handleAdd}
-              className="px-3 py-1.5 bg-accent hover:bg-accent-hover text-white text-xs rounded-lg transition-colors"
-            >
-              Add
-            </button>
-            <button
-              onClick={() => { setAdding(false); setNewTitle(''); setNewSubtitle(''); }}
-              className="px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.12] text-text-muted text-xs rounded-lg transition-colors"
-            >
-              Cancel
-            </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => { setAdding(false); setNewTitle(''); setNewSubtitle(''); }}>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div
+            className="relative bg-surface border border-border rounded-2xl p-5 w-80 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h4 className="text-sm font-bold text-text mb-3">New Habit</h4>
+            <div className="flex flex-col gap-2.5">
+              <input
+                type="text"
+                placeholder="Habit name..."
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                autoFocus
+                className="w-full bg-white/[0.06] border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-muted/50 outline-none focus:border-accent"
+              />
+              <input
+                type="text"
+                placeholder="Subtitle (optional)..."
+                value={newSubtitle}
+                onChange={(e) => setNewSubtitle(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                className="w-full bg-white/[0.06] border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-muted/50 outline-none focus:border-accent"
+              />
+              <div className="flex gap-2 justify-end mt-1">
+                <button
+                  onClick={() => { setAdding(false); setNewTitle(''); setNewSubtitle(''); }}
+                  className="px-4 py-1.5 bg-white/[0.06] hover:bg-white/[0.12] text-text-muted text-xs rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAdd}
+                  className="px-4 py-1.5 bg-accent hover:bg-accent-hover text-white text-xs rounded-lg transition-colors"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
