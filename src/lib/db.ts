@@ -14,6 +14,24 @@ function createDb() {
   const sqlite = new Database(dbPath);
   sqlite.pragma('journal_mode = WAL');
   sqlite.pragma('busy_timeout = 5000');
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS habits (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      subtitle TEXT,
+      icon TEXT NOT NULL DEFAULT '✅',
+      color TEXT NOT NULL DEFAULT '#4A90D9',
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS habit_completions (
+      id TEXT PRIMARY KEY,
+      habit_id TEXT NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
+      date TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(habit_id, date)
+    );
+  `);
   return drizzle(sqlite, { schema });
 }
 

@@ -21,3 +21,24 @@ export const events = sqliteTable('events', {
 
 export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;
+
+export const habits = sqliteTable('habits', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  subtitle: text('subtitle'),
+  icon: text('icon').notNull().default('✅'),
+  color: text('color').notNull().default('#4A90D9'),
+  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
+  updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
+});
+
+export const habitCompletions = sqliteTable('habit_completions', {
+  id: text('id').primaryKey(),
+  habitId: text('habit_id').notNull().references(() => habits.id, { onDelete: 'cascade' }),
+  date: text('date').notNull(),
+  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
+});
+
+export type Habit = typeof habits.$inferSelect;
+export type NewHabit = typeof habits.$inferInsert;
+export type HabitCompletion = typeof habitCompletions.$inferSelect;
