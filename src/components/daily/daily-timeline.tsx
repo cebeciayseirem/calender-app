@@ -63,8 +63,9 @@ export function DailyTimeline({ events, currentDate, onEventClick, onAddEvent }:
               const endTime = new Date(event.end);
               const eventStartMinutes = startTime.getHours() * 60 + startTime.getMinutes();
               const eventEndMinutes = endTime.getHours() * 60 + endTime.getMinutes();
+              const isDayInPast = currentDate < new Date(now.getFullYear(), now.getMonth(), now.getDate());
               const isCurrent = isToday && nowMinutes >= eventStartMinutes && nowMinutes < eventEndMinutes;
-              const isPast = isToday && nowMinutes >= eventEndMinutes;
+              const isPast = isDayInPast || (isToday && nowMinutes >= eventEndMinutes);
 
               return (
                 <div key={event.id + event.start} className="flex gap-4">
