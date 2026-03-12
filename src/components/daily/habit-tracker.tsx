@@ -43,9 +43,6 @@ export function HabitTracker({ date }: HabitTrackerProps) {
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-text truncate">{habit.title}</p>
-              {habit.subtitle && (
-                <p className="text-xs text-text-muted truncate mt-0.5">{habit.subtitle}</p>
-              )}
             </div>
             <button
               onClick={() => toggleHabit.mutate(habit.id)}

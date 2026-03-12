@@ -50,12 +50,21 @@ export function RecurrencePicker({
 
   const getLabel = (): string => {
     if (!recurrence) return 'Does not repeat';
+
+    if (recurrence.type === 'weekly' && recurrence.daysOfWeek && recurrence.daysOfWeek.length > 0) {
+      const days = recurrence.daysOfWeek
+        .slice()
+        .sort((a, b) => a - b)
+        .map((d) => DAY_NAMES[d].slice(0, 3))
+        .join(', ');
+      if (recurrence.interval === 1) return `Weekly \u00b7 ${days}`;
+      return `Every ${recurrence.interval} weeks \u00b7 ${days}`;
+    }
+
     if (recurrence.interval === 1 && PRESET_LABELS[recurrence.type]) {
       return PRESET_LABELS[recurrence.type];
     }
-    return `Custom: ${recurrence.type}${
-      recurrence.interval > 1 ? ` (every ${recurrence.interval})` : ''
-    }`;
+    return `Every ${recurrence.interval} ${recurrence.type.replace('ly', '')}s`;
   };
 
   const handlePresetSelect = (type: string) => {
@@ -188,7 +197,7 @@ export function RecurrencePicker({
                 <select
                   value={recType}
                   onChange={(e) => setRecType(e.target.value as RecurrenceType)}
-                  className="w-[120px] px-3 py-2.5 border border-white/[0.08] rounded-lg bg-white/[0.04] text-text text-sm"
+                  className="w-[120px] px-3 py-2.5 border border-white/[0.08] rounded-lg bg-surface text-text text-sm [&>option]:bg-surface [&>option]:text-text"
                 >
                   <option value="daily">day</option>
                   <option value="weekly">week</option>
@@ -206,7 +215,7 @@ export function RecurrencePicker({
                   onChange={(e) =>
                     setMonthlyMode(e.target.value as 'dayOfMonth' | 'nthWeekday')
                   }
-                  className="w-full px-3 py-2.5 border border-white/[0.08] rounded-lg bg-white/[0.04] text-text text-sm"
+                  className="w-full px-3 py-2.5 border border-white/[0.08] rounded-lg bg-surface text-text text-sm [&>option]:bg-surface [&>option]:text-text"
                 >
                   <option value="dayOfMonth">
                     {startDateTime

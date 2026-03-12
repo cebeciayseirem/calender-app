@@ -18,6 +18,8 @@ const RECURRENCE_LABELS: Record<string, string> = {
   yearly: 'Every year',
 };
 
+const DAY_NAMES_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
   const { data: habits = [] } = useHabits(undefined, open);
   const createHabit = useCreateHabit();
@@ -61,6 +63,17 @@ export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
   const getRecurrenceLabel = (habit: Habit) => {
     if (!habit.recurrence) return 'Does not repeat';
     const rec = habit.recurrence;
+
+    if (rec.type === 'weekly' && rec.daysOfWeek && rec.daysOfWeek.length > 0) {
+      const days = rec.daysOfWeek
+        .slice()
+        .sort((a: number, b: number) => a - b)
+        .map((d: number) => DAY_NAMES_SHORT[d])
+        .join(', ');
+      if (rec.interval === 1) return `Weekly · ${days}`;
+      return `Every ${rec.interval} weeks · ${days}`;
+    }
+
     if (rec.interval === 1) return RECURRENCE_LABELS[rec.type] || rec.type;
     return `Every ${rec.interval} ${rec.type.replace('ly', '')}s`;
   };
@@ -113,9 +126,6 @@ export function HabitManageModal({ open, onClose }: HabitManageModalProps) {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-text truncate">{habit.title}</p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        {habit.subtitle && (
-                          <p className="text-xs text-text-muted truncate">{habit.subtitle}</p>
-                        )}
                         <span className="text-[10px] text-text-muted/60">{getRecurrenceLabel(habit)}</span>
                         {habit.category && (
                           <span
