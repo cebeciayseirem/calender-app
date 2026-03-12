@@ -62,7 +62,9 @@ export function DailyTimeline({ events, currentDate, onEventClick, onAddEvent }:
               const startTime = new Date(event.start);
               const endTime = new Date(event.end);
               const eventStartMinutes = startTime.getHours() * 60 + startTime.getMinutes();
-              const eventEndMinutes = endTime.getHours() * 60 + endTime.getMinutes();
+              let eventEndMinutes = endTime.getHours() * 60 + endTime.getMinutes();
+              // If end resolves to midnight but start is on the same day, treat as end-of-day
+              if (eventEndMinutes <= eventStartMinutes) eventEndMinutes = 24 * 60;
               const isDayInPast = currentDate < new Date(now.getFullYear(), now.getMonth(), now.getDate());
               const isCurrent = isToday && nowMinutes >= eventStartMinutes && nowMinutes < eventEndMinutes;
               const isPast = isDayInPast || (isToday && nowMinutes >= eventEndMinutes);
