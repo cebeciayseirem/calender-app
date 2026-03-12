@@ -5,8 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { eq, and } from 'drizzle-orm';
 import { format } from 'date-fns';
 
-export async function GET() {
-  const today = format(new Date(), 'yyyy-MM-dd');
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const today = searchParams.get('date') || format(new Date(), 'yyyy-MM-dd');
   const allHabits = db.select().from(habits).all();
 
   const result = allHabits.map((habit) => {

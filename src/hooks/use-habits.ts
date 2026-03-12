@@ -2,10 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as api from '@/lib/api-client';
 import type { HabitFormData } from '@/types/habit';
 
-export function useHabits() {
+export function useHabits(date?: string) {
   return useQuery({
-    queryKey: ['habits'],
-    queryFn: () => api.fetchHabits(),
+    queryKey: ['habits', date],
+    queryFn: () => api.fetchHabits(date),
   });
 }
 
@@ -25,10 +25,10 @@ export function useDeleteHabit() {
   });
 }
 
-export function useToggleHabit() {
+export function useToggleHabit(date?: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => api.toggleHabit(id),
+    mutationFn: (id: string) => api.toggleHabit(id, date),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['habits'] }),
   });
 }

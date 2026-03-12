@@ -49,8 +49,9 @@ export async function searchEvents(query: string): Promise<CalendarEvent[]> {
 
 // Habits API
 
-export async function fetchHabits(): Promise<Habit[]> {
-  const res = await fetch(`${API_BASE}/habits`);
+export async function fetchHabits(date?: string): Promise<Habit[]> {
+  const params = date ? `?date=${date}` : '';
+  const res = await fetch(`${API_BASE}/habits${params}`);
   if (!res.ok) throw new Error('Failed to fetch habits');
   return res.json();
 }
@@ -80,8 +81,9 @@ export async function deleteHabit(id: string): Promise<void> {
   if (!res.ok) throw new Error('Failed to delete habit');
 }
 
-export async function toggleHabit(id: string): Promise<{ completed: boolean }> {
-  const res = await fetch(`${API_BASE}/habits/${id}/toggle`, { method: 'POST' });
+export async function toggleHabit(id: string, date?: string): Promise<{ completed: boolean }> {
+  const params = date ? `?date=${date}` : '';
+  const res = await fetch(`${API_BASE}/habits/${id}/toggle${params}`, { method: 'POST' });
   if (!res.ok) throw new Error('Failed to toggle habit');
   return res.json();
 }

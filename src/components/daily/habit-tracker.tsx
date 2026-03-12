@@ -3,10 +3,14 @@
 import { useState } from 'react';
 import { useHabits, useCreateHabit, useToggleHabit, useDeleteHabit } from '@/hooks/use-habits';
 
-export function HabitTracker() {
-  const { data: habits = [], isLoading } = useHabits();
+interface HabitTrackerProps {
+  date: string; // 'yyyy-MM-dd'
+}
+
+export function HabitTracker({ date }: HabitTrackerProps) {
+  const { data: habits = [], isLoading } = useHabits(date);
   const createHabit = useCreateHabit();
-  const toggleHabit = useToggleHabit();
+  const toggleHabit = useToggleHabit(date);
   const deleteHabit = useDeleteHabit();
 
   const [adding, setAdding] = useState(false);

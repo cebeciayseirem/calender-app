@@ -6,11 +6,12 @@ import { eq, and } from 'drizzle-orm';
 import { format } from 'date-fns';
 
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const today = format(new Date(), 'yyyy-MM-dd');
+  const { searchParams } = request.nextUrl;
+  const today = searchParams.get('date') || format(new Date(), 'yyyy-MM-dd');
 
   const existing = db
     .select()

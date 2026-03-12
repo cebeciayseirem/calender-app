@@ -3,6 +3,7 @@
 import { isSameDay } from '@/lib/date-utils';
 import { DailySidebar } from '@/components/daily/daily-sidebar';
 import { DailyTimeline } from '@/components/daily/daily-timeline';
+import { format } from 'date-fns';
 import type { ExpandedEvent } from '@/types/event';
 
 interface DailyViewProps {
@@ -19,7 +20,7 @@ export function DailyView({ events, currentDate, onEventClick, onEmptyClick }: D
 
   return (
     <div className="flex gap-4 h-full max-md:flex-col max-md:overflow-y-auto">
-      <DailySidebar />
+      <DailySidebar date={format(currentDate, 'yyyy-MM-dd')} />
       <DailyTimeline
         events={dayEvents}
         currentDate={currentDate}
