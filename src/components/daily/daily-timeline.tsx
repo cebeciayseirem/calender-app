@@ -114,10 +114,6 @@ export function DailyTimeline({ events, currentDate, onEventClick, onAddEvent }:
               );
             })}
 
-            {/* Current time line */}
-            {isToday && events.length > 0 && (
-              <CurrentTimeLine now={now} events={events} />
-            )}
           </div>
         )}
       </div>
@@ -125,23 +121,3 @@ export function DailyTimeline({ events, currentDate, onEventClick, onAddEvent }:
   );
 }
 
-function CurrentTimeLine({ now, events }: { now: Date; events: ExpandedEvent[] }) {
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
-  const firstStart = new Date(events[0].start);
-  const lastEnd = new Date(events[events.length - 1].end);
-  const firstMinutes = firstStart.getHours() * 60 + firstStart.getMinutes();
-  const lastMinutes = lastEnd.getHours() * 60 + lastEnd.getMinutes();
-
-  if (nowMinutes < firstMinutes || nowMinutes > lastMinutes) return null;
-
-  const pct = ((nowMinutes - firstMinutes) / (lastMinutes - firstMinutes)) * 100;
-
-  return (
-    <div
-      className="absolute left-0 right-0 pointer-events-none"
-      style={{ top: `${pct}%` }}
-    >
-      <div className="w-full h-0.5 bg-accent/60" />
-    </div>
-  );
-}
