@@ -1,4 +1,5 @@
 import type { CalendarEvent, EventFormData } from '@/types/event';
+import type { Habit, HabitFormData } from '@/types/habit';
 
 const API_BASE = '/api';
 
@@ -43,5 +44,44 @@ export async function deleteEvent(id: string): Promise<void> {
 export async function searchEvents(query: string): Promise<CalendarEvent[]> {
   const res = await fetch(`${API_BASE}/events/search?q=${encodeURIComponent(query)}`);
   if (!res.ok) throw new Error('Search failed');
+  return res.json();
+}
+
+// Habits API
+
+export async function fetchHabits(): Promise<Habit[]> {
+  const res = await fetch(`${API_BASE}/habits`);
+  if (!res.ok) throw new Error('Failed to fetch habits');
+  return res.json();
+}
+
+export async function createHabit(data: HabitFormData): Promise<Habit> {
+  const res = await fetch(`${API_BASE}/habits`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to create habit');
+  return res.json();
+}
+
+export async function updateHabit(id: string, data: HabitFormData): Promise<Habit> {
+  const res = await fetch(`${API_BASE}/habits/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to update habit');
+  return res.json();
+}
+
+export async function deleteHabit(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/habits/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete habit');
+}
+
+export async function toggleHabit(id: string): Promise<{ completed: boolean }> {
+  const res = await fetch(`${API_BASE}/habits/${id}/toggle`, { method: 'POST' });
+  if (!res.ok) throw new Error('Failed to toggle habit');
   return res.json();
 }
