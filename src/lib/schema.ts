@@ -1,4 +1,5 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
 
 export const events = sqliteTable('events', {
   id: text('id').primaryKey(),
@@ -28,15 +29,15 @@ export const habits = sqliteTable('habits', {
   subtitle: text('subtitle'),
   icon: text('icon').notNull().default('✅'),
   color: text('color').notNull().default('#4A90D9'),
-  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
-  updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP'),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const habitCompletions = sqliteTable('habit_completions', {
   id: text('id').primaryKey(),
   habitId: text('habit_id').notNull().references(() => habits.id, { onDelete: 'cascade' }),
   date: text('date').notNull(),
-  createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 export type Habit = typeof habits.$inferSelect;
