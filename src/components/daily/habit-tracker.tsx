@@ -111,17 +111,15 @@ export function HabitTracker({ date }: HabitTrackerProps) {
             </button>
             <button
               onClick={() => toggleHabit.mutate(habit.id)}
-              className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
+              className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 ${
                 habit.completedToday
-                  ? 'bg-accent border-accent text-white'
-                  : 'border-border hover:border-accent/50'
+                  ? 'bg-accent text-white shadow-[0_0_10px_rgba(74,144,217,0.4)] scale-105'
+                  : 'bg-white/[0.08] hover:bg-white/[0.15] text-transparent hover:text-text-muted/30'
               }`}
             >
-              {habit.completedToday && (
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              )}
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
             </button>
           </div>
         ))}
