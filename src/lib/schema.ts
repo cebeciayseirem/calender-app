@@ -29,6 +29,10 @@ export const habits = sqliteTable('habits', {
   subtitle: text('subtitle'),
   icon: text('icon').notNull().default('✅'),
   color: text('color').notNull().default('#4A90D9'),
+  frequencyType: text('frequency_type').notNull().default('daily'),
+  frequencyDays: text('frequency_days'),  // JSON array e.g. "[1,3,5]"
+  frequencyCount: integer('frequency_count'),
+  categoryId: text('category_id').references(() => categories.id),
   createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });
@@ -43,3 +47,13 @@ export const habitCompletions = sqliteTable('habit_completions', {
 export type Habit = typeof habits.$inferSelect;
 export type NewHabit = typeof habits.$inferInsert;
 export type HabitCompletion = typeof habitCompletions.$inferSelect;
+
+export const categories = sqliteTable('categories', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull().unique(),
+  isDefault: integer('is_default').notNull().default(0),
+  createdAt: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export type Category = typeof categories.$inferSelect;
+export type NewCategory = typeof categories.$inferInsert;
