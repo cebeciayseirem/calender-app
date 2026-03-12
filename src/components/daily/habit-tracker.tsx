@@ -1,88 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-import { useHabits, useCreateHabit, useToggleHabit, useDeleteHabit } from '@/hooks/use-habits';
+import { useHabits, useToggleHabit } from '@/hooks/use-habits';
+import { HabitManageModal } from './habit-manage-modal';
+import { CategoryBadge } from './category-badge';
 
 interface HabitTrackerProps {
-  date: string; // 'yyyy-MM-dd'
+  date: string;
 }
 
 export function HabitTracker({ date }: HabitTrackerProps) {
   const { data: habits = [], isLoading } = useHabits(date);
-  const createHabit = useCreateHabit();
   const toggleHabit = useToggleHabit(date);
-  const deleteHabit = useDeleteHabit();
-
-  const [adding, setAdding] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newSubtitle, setNewSubtitle] = useState('');
-
-  const handleAdd = () => {
-    if (!newTitle.trim()) return;
-    createHabit.mutate({ title: newTitle.trim(), subtitle: newSubtitle.trim() || undefined });
-    setNewTitle('');
-    setNewSubtitle('');
-    setAdding(false);
-  };
+  const [manageOpen, setManageOpen] = useState(false);
 
   return (
     <div className="px-5 py-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-base font-bold text-text">Habit Tracker</h3>
         <button
-          onClick={() => setAdding(!adding)}
+          onClick={() => setManageOpen(true)}
           className="w-8 h-8 rounded-xl bg-accent/15 hover:bg-accent/25 text-accent hover:text-accent-hover flex items-center justify-center transition-all hover:shadow-[0_0_12px_rgba(74,144,217,0.3)] hover:scale-105 active:scale-95"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>
       </div>
-
-      {adding && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => { setAdding(false); setNewTitle(''); setNewSubtitle(''); }}>
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div
-            className="relative bg-surface border border-border rounded-2xl p-5 w-80 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h4 className="text-sm font-bold text-text mb-3">New Habit</h4>
-            <div className="flex flex-col gap-2.5">
-              <input
-                type="text"
-                placeholder="Habit name..."
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                autoFocus
-                className="w-full bg-white/[0.06] border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-muted/50 outline-none focus:border-accent"
-              />
-              <input
-                type="text"
-                placeholder="Subtitle (optional)..."
-                value={newSubtitle}
-                onChange={(e) => setNewSubtitle(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                className="w-full bg-white/[0.06] border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-text-muted/50 outline-none focus:border-accent"
-              />
-              <div className="flex gap-2 justify-end mt-1">
-                <button
-                  onClick={() => { setAdding(false); setNewTitle(''); setNewSubtitle(''); }}
-                  className="px-4 py-1.5 bg-white/[0.06] hover:bg-white/[0.12] text-text-muted text-xs rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAdd}
-                  className="px-4 py-1.5 bg-accent hover:bg-accent-hover text-white text-xs rounded-lg transition-colors"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {isLoading && <p className="text-xs text-text-muted">Loading...</p>}
 
@@ -90,7 +35,7 @@ export function HabitTracker({ date }: HabitTrackerProps) {
         {habits.map((habit) => (
           <div
             key={habit.id}
-            className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-3 py-3 group"
+            className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-3 py-3"
           >
             <div
               className="w-2 h-9 rounded-full shrink-0"
@@ -98,17 +43,13 @@ export function HabitTracker({ date }: HabitTrackerProps) {
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-text truncate">{habit.title}</p>
-              {habit.subtitle && (
-                <p className="text-xs text-text-muted truncate">{habit.subtitle}</p>
-              )}
+              <div className="flex items-center gap-2 mt-0.5">
+                {habit.subtitle && (
+                  <p className="text-xs text-text-muted truncate">{habit.subtitle}</p>
+                )}
+                {habit.category && <CategoryBadge name={habit.category.name} />}
+              </div>
             </div>
-            <button
-              onClick={() => deleteHabit.mutate(habit.id)}
-              className="w-6 h-6 rounded-full text-text-muted/40 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-xs"
-              title="Delete habit"
-            >
-              ✕
-            </button>
             <button
               onClick={() => toggleHabit.mutate(habit.id)}
               className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 ${
@@ -124,6 +65,8 @@ export function HabitTracker({ date }: HabitTrackerProps) {
           </div>
         ))}
       </div>
+
+      <HabitManageModal open={manageOpen} onClose={() => setManageOpen(false)} />
     </div>
   );
 }
