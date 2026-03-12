@@ -8,17 +8,7 @@ interface WeatherData {
   low: number;
   condition: string;
   description: string;
-  icon: string;
 }
-
-const FALLBACK_WEATHER: WeatherData = {
-  temp: 72,
-  high: 75,
-  low: 68,
-  condition: 'Clouds',
-  description: 'partly cloudy',
-  icon: '02d',
-};
 
 const WEATHER_ICONS: Record<string, string> = {
   Clear: '☀️',
@@ -60,7 +50,7 @@ export function WeatherWidget() {
     }
 
     if (!navigator.geolocation) {
-      setWeather(FALLBACK_WEATHER);
+      setError('Geolocation not supported');
       return;
     }
 
@@ -74,10 +64,10 @@ export function WeatherWidget() {
           cacheWeather(data);
           setWeather(data);
         } catch {
-          setWeather(FALLBACK_WEATHER);
+          setError('Unable to load weather');
         }
       },
-      () => setWeather(FALLBACK_WEATHER)
+      () => setError('Location access denied')
     );
   }, []);
 
