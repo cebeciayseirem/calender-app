@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { habits, habitCompletions } from '@/lib/schema';
+import { habits, habitCompletions, categories } from '@/lib/schema';
 import { v4 as uuidv4 } from 'uuid';
 import { eq, and } from 'drizzle-orm';
 import { format } from 'date-fns';
+
+function lookupCategory(categoryId: string | null) {
+  if (!categoryId) return null;
+  const cat = db.select().from(categories).where(eq(categories.id, categoryId)).get();
+  if (!cat) return null;
+  return { id: cat.id, name: cat.name, isDefault: !!cat.isDefault };
+}
+
+function formatHabit(habit: typeof habits.$inferSelect, completedToday: boolean) {
+  return {
+    id: habit.id,
+    title: habit.title,
+    subtitle: habit.subtitle,
+    icon: habit.icon,
+    color: habit.color,
+    frequencyType: habit.frequencyType,
+    frequencyDays: habit.frequencyDays ? JSON.parse(habit.frequencyDays) : null,
+    frequencyCount: habit.frequencyCount,
+    category: lookupCategory(habit.categoryId),
+    completedToday,
+  };
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -17,10 +39,7 @@ export async function GET(request: NextRequest) {
       .where(and(eq(habitCompletions.habitId, habit.id), eq(habitCompletions.date, today)))
       .get();
 
-    return {
-      ...habit,
-      completedToday: !!completion,
-    };
+    return formatHabit(habit, !!completion);
   });
 
   return NextResponse.json(result);
@@ -38,11 +57,15 @@ export async function POST(request: NextRequest) {
       subtitle: body.subtitle || null,
       icon: body.icon || '✅',
       color: body.color || '#4A90D9',
+      frequencyType: body.frequencyType || 'daily',
+      frequencyDays: body.frequencyDays ? JSON.stringify(body.frequencyDays) : null,
+      frequencyCount: body.frequencyCount ?? null,
+      categoryId: body.categoryId || null,
       createdAt: now,
       updatedAt: now,
     })
     .run();
 
   const created = db.select().from(habits).where(eq(habits.id, id)).get();
-  return NextResponse.json({ ...created, completedToday: false }, { status: 201 });
+  return NextResponse.json(formatHabit(created!, false), { status: 201 });
 }
