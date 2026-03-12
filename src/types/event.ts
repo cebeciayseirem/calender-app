@@ -47,4 +47,5 @@ export const CATEGORY_COLORS: Record<string, string> = {
   Health: '#0070f3',
   Errand: '#366337',
   Social: '#9C27B0',
+  Personal: '#e45787',
 };

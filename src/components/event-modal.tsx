@@ -138,7 +138,7 @@ export function EventModal({
       className="fixed inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-[1000] animate-[modalFadeIn_0.2s_ease-out]"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-gradient-to-br from-surface to-bg border border-white/[0.06] rounded-2xl w-[440px] max-h-[85vh] overflow-y-auto shadow-[0_24px_48px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04),0_0_80px_rgba(74,144,217,0.06)] animate-[modalSlideIn_0.25s_ease-out]">
+      <div className="bg-gradient-to-br from-surface to-bg border border-white/[0.06] rounded-2xl w-[480px] max-h-[85vh] overflow-y-auto shadow-[0_24px_48px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04),0_0_80px_rgba(74,144,217,0.06)] animate-[modalSlideIn_0.25s_ease-out]">
         {/* Color accent bar */}
         <div
           className="h-1.5 rounded-t-2xl transition-colors duration-300"
@@ -161,13 +161,13 @@ export function EventModal({
           </div>
 
           {/* Category tags */}
-          <div className="flex gap-2.5 mb-5 ml-[30px] mt-3">
+          <div className="flex gap-2 mb-5 ml-[30px] mt-3">
             {Object.entries(CATEGORY_COLORS).map(([tag, tagColor]) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => setTag(tag)}
-                className={`px-4 py-2 rounded-lg border-[1.5px] text-[0.95rem] font-medium cursor-pointer transition-all duration-200 ${
+                className={`flex-1 py-1.5 rounded-lg border-[1.5px] text-sm font-medium cursor-pointer transition-all duration-200 ${
                   category === tag
                     ? 'text-white shadow-[0_0_12px_rgba(74,144,217,0.25)] scale-[1.02]'
                     : 'border-white/10 bg-transparent text-text-muted hover:border-white/25 hover:text-text hover:scale-[1.02]'

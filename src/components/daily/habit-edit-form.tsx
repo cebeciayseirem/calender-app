@@ -16,13 +16,10 @@ interface HabitEditFormProps {
 export function HabitEditForm({ habit, onSave, onCancel, isSaving }: HabitEditFormProps) {
   const titleRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(habit?.title || '');
-  const [subtitle, setSubtitle] = useState(habit?.subtitle || '');
   const [category, setCategory] = useState(habit?.category || '');
   const [recurrence, setRecurrence] = useState<RecurrenceConfig | null>(
     habit?.recurrence ?? null
   );
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-
   useEffect(() => {
     setTimeout(() => titleRef.current?.focus(), 50);
   }, []);
@@ -31,7 +28,6 @@ export function HabitEditForm({ habit, onSave, onCancel, isSaving }: HabitEditFo
     if (!title.trim()) return;
     onSave({
       title: title.trim(),
-      subtitle: subtitle.trim() || undefined,
       category: category || undefined,
       recurrence,
     });
@@ -65,13 +61,13 @@ export function HabitEditForm({ habit, onSave, onCancel, isSaving }: HabitEditFo
       </div>
 
       {/* Category tags */}
-      <div className="flex gap-2.5 mb-5 ml-[30px] mt-3">
+      <div className="flex gap-2 mb-5 ml-[30px] mt-3">
         {Object.entries(CATEGORY_COLORS).map(([tag, tc]) => (
           <button
             key={tag}
             type="button"
             onClick={() => handleTagClick(tag)}
-            className={`px-4 py-2 rounded-lg border-[1.5px] text-[0.95rem] font-medium cursor-pointer transition-all duration-200 ${
+            className={`flex-1 py-1.5 rounded-lg border-[1.5px] text-sm font-medium cursor-pointer transition-all duration-200 ${
               category === tag
                 ? 'text-white shadow-[0_0_12px_rgba(74,144,217,0.25)] scale-[1.02]'
                 : 'border-white/10 bg-transparent text-text-muted hover:border-white/25 hover:text-text hover:scale-[1.02]'
@@ -85,32 +81,6 @@ export function HabitEditForm({ habit, onSave, onCancel, isSaving }: HabitEditFo
             {tag}
           </button>
         ))}
-      </div>
-
-      {/* Subtitle / Description */}
-      <div className="flex items-center gap-2.5 mb-4 group">
-        <svg
-          className={`w-5 h-5 shrink-0 transition-colors duration-200 ${
-            focusedField === 'subtitle' ? 'text-accent' : 'text-text-muted group-hover:text-text/60'
-          }`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="15" y2="18" />
-        </svg>
-        <input
-          type="text"
-          value={subtitle}
-          onChange={(e) => setSubtitle(e.target.value)}
-          onFocus={() => setFocusedField('subtitle')}
-          onBlur={() => setFocusedField(null)}
-          placeholder="Add description"
-          className="flex-1 bg-transparent py-2.5 border-b-[1.5px] border-white/[0.08] rounded-none text-[0.95rem] focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-[#556677]"
-        />
       </div>
 
       {/* Recurrence */}
