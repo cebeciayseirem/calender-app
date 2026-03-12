@@ -32,3 +32,11 @@ export function useToggleHabit(date?: string) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['habits'] }),
   });
 }
+
+export function useUpdateHabit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: HabitFormData }) => api.updateHabit(id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['habits'] }),
+  });
+}
