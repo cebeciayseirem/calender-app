@@ -359,7 +359,7 @@ export function RecurrencePicker({
               <button
                 type="button"
                 onClick={handleCustomSave}
-                className="bg-gradient-to-br from-accent to-accent-hover text-white border-none px-6 py-2.5 rounded-lg cursor-pointer text-sm font-medium hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(74,144,217,0.3)] transition-all"
+                className="bg-gradient-to-br from-accent to-accent-hover text-white border-none px-6 py-2.5 rounded-lg cursor-pointer text-sm font-medium hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(63,145,66,0.3)] transition-all"
               >
                 Save
               </button>

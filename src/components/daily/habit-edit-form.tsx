@@ -69,7 +69,7 @@ export function HabitEditForm({ habit, onSave, onCancel, isSaving }: HabitEditFo
             onClick={() => handleTagClick(tag)}
             className={`flex-1 py-1.5 rounded-lg border-[1.5px] text-sm font-medium cursor-pointer transition-all duration-200 ${
               category === tag
-                ? 'text-white shadow-[0_0_12px_rgba(74,144,217,0.25)] scale-[1.02]'
+                ? 'text-white shadow-[0_0_12px_rgba(63,145,66,0.25)] scale-[1.02]'
                 : 'border-white/10 bg-transparent text-text-muted hover:border-white/25 hover:text-text hover:scale-[1.02]'
             }`}
             style={
@@ -103,7 +103,7 @@ export function HabitEditForm({ habit, onSave, onCancel, isSaving }: HabitEditFo
           type="button"
           onClick={handleSubmit}
           disabled={!title.trim() || isSaving}
-          className="bg-gradient-to-br from-accent to-accent-hover text-white border-none px-8 py-2.5 rounded-xl cursor-pointer text-sm font-semibold hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(74,144,217,0.35)] active:translate-y-0 transition-all duration-200 disabled:opacity-50"
+          className="bg-gradient-to-br from-accent to-accent-hover text-white border-none px-8 py-2.5 rounded-xl cursor-pointer text-sm font-semibold hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(63,145,66,0.35)] active:translate-y-0 transition-all duration-200 disabled:opacity-50"
         >
           {isSaving ? 'Saving...' : 'Save'}
         </button>

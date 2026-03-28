@@ -31,7 +31,7 @@ export function DailyTimeline({ events, currentDate, onEventClick, onAddEvent }:
     <div className="flex-1 flex flex-col">
       <div className="bg-surface rounded-2xl px-6 pt-6 pb-5 flex-1 overflow-y-auto">
         {/* Header */}
-        <div className="flex items-start justify-between pb-5">
+        <div className="flex items-center justify-between pb-5">
           <div>
             <h2 className="text-xl font-bold text-text">
               {format(currentDate, "EEEE, d MMMM")}
@@ -42,9 +42,12 @@ export function DailyTimeline({ events, currentDate, onEventClick, onAddEvent }:
           </div>
           <button
             onClick={() => onAddEvent(currentDate)}
-            className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-xl transition-colors flex items-center gap-1.5"
+            className="px-4 py-2 bg-accent/15 hover:bg-accent/25 text-accent text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
           >
-            <span className="text-lg leading-none">+</span> Add Event
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" d="M12 5v14M5 12h14" />
+            </svg>
+            Add Event
           </button>
         </div>
 
@@ -85,7 +88,7 @@ export function DailyTimeline({ events, currentDate, onEventClick, onAddEvent }:
                   <div className="flex flex-col items-center w-4 shrink-0">
                     <div
                       className={`w-3 h-3 rounded-full mt-5 shrink-0 ${
-                        isCurrent ? 'bg-accent shadow-[0_0_8px_rgba(74,144,217,0.5)]' : isPast ? 'bg-text-muted/30' : 'bg-border'
+                        isCurrent ? 'bg-accent shadow-[0_0_8px_rgba(63,145,66,0.5)]' : isPast ? 'bg-text-muted/30' : 'bg-border'
                       }`}
                     />
                     {idx < events.length - 1 && (
