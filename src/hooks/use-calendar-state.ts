@@ -53,8 +53,8 @@ export function useCalendarState() {
         };
       case 'monthly':
         return {
-          start: format(startOfMonth(currentDate), "yyyy-MM-dd'T'HH:mm:ss"),
-          end: format(endOfMonth(currentDate), "yyyy-MM-dd'T'HH:mm:ss"),
+          start: format(startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 }), "yyyy-MM-dd'T'HH:mm:ss"),
+          end: format(endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 }), "yyyy-MM-dd'T'HH:mm:ss"),
         };
       case 'weekly':
         return {

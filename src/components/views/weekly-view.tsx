@@ -191,30 +191,47 @@ function EventCard({
   const end = new Date(event.end);
   const startMin = getMinutesFromMidnight(start);
   const endMin = getMinutesFromMidnight(end);
-  const duration = Math.max(endMin - startMin, 30); // minimum 30min visual height
+  const duration = Math.max(endMin - startMin, 30);
 
   const top = (startMin / 60) * HOUR_HEIGHT;
   const height = (duration / 60) * HOUR_HEIGHT;
+  const color = event.color || '#4A90D9';
+  const isCompact = height < 40;
 
   return (
     <div
-      className="absolute left-0.5 right-[30%] rounded px-2 py-1 text-[12px] cursor-pointer hover:brightness-110 transition-all leading-tight overflow-hidden z-10"
+      className="absolute left-1 right-1.5 rounded-[6px] cursor-pointer transition-all duration-200 overflow-hidden z-10 group border border-white/[0.06] hover:border-white/[0.12] hover:translate-y-[-0.5px] hover:shadow-lg"
       style={{
         top: `${top}px`,
         height: `${height}px`,
-        backgroundColor: event.color || '#4A90D9',
+        background: `linear-gradient(135deg, ${color}22 0%, ${color}18 100%)`,
+        boxShadow: `inset 3px 0 0 ${color}, 0 1px 3px rgba(0,0,0,0.2)`,
       }}
       onClick={(e) => {
         e.stopPropagation();
         onEventClick(event);
       }}
     >
-      <span className="font-semibold block text-white leading-snug break-words">
-        {event.title}
-      </span>
-      <span className="text-[11px] text-white/75 block">
-        {formatTime(start)} – {formatTime(end)}
-      </span>
+      {/* Subtle top shimmer */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{
+          background: `linear-gradient(135deg, ${color}15 0%, transparent 60%)`,
+        }}
+      />
+      <div className={`relative px-2 ${isCompact ? 'py-0.5 flex items-center gap-2' : 'py-1.5'}`}>
+        <span
+          className="font-semibold block text-[11.5px] leading-snug break-words tracking-[-0.01em]"
+          style={{ color: `color-mix(in srgb, ${color} 60%, #ffffff)` }}
+        >
+          {event.title}
+        </span>
+        {!isCompact && (
+          <span className="text-[10.5px] text-white/45 block mt-0.5 font-medium tracking-wide">
+            {formatTime(start)} – {formatTime(end)}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

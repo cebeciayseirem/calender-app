@@ -95,11 +95,11 @@ export function MonthlyView({
       </div>
 
       {/* Week rows */}
-      <div className="flex-1 grid" style={{ gridTemplateRows: `repeat(${rows.length}, 1fr)` }}>
+      <div className="flex-1 min-h-0 grid" style={{ gridTemplateRows: `repeat(${rows.length}, minmax(0, 1fr))` }}>
         {rows.map((week, rowIdx) => (
           <div
             key={rowIdx}
-            className="grid border-b border-white/[0.06]"
+            className="grid min-h-0 border-b border-white/[0.06]"
             style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}
           >
             {week.map((cell, colIdx) => {
@@ -107,44 +107,52 @@ export function MonthlyView({
               const dayEvents = events.filter((e) =>
                 isSameDay(new Date(e.start), cell.date)
               );
+              const maxVisible = rows.length > 5 ? 2 : 3;
 
               return (
                 <div
                   key={colIdx}
-                  className={`border-r border-white/[0.06] last:border-r-0 p-2 cursor-pointer overflow-hidden ${
+                  className={`border-r border-white/[0.06] last:border-r-0 px-1.5 py-1 cursor-pointer overflow-hidden ${
                     isToday ? 'bg-[#1e2a4a]' : ''
                   }`}
                   onClick={() => onNavigate('daily', cell.date)}
                 >
                   <span
-                    className={`text-sm font-medium inline-block ${
+                    className={`text-[12px] font-medium inline-block ${
                       !cell.isCurrentMonth
                         ? 'text-text-muted/40'
                         : isToday
-                          ? 'bg-accent text-white rounded-full w-6 h-6 leading-6 text-center'
+                          ? 'bg-accent text-white rounded-full w-5 h-5 leading-5 text-center text-[11px]'
                           : 'text-text'
                     }`}
                   >
                     {formatDayLabel(cell.date)}
                   </span>
                   {dayEvents.length > 0 && (
-                    <div className="mt-1">
-                      {dayEvents.slice(0, 3).map((e, i) => (
-                        <div
-                          key={i}
-                          className="text-[11px] px-1.5 py-0.5 rounded text-white mb-0.5 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
-                          style={{ backgroundColor: e.color || '#4A90D9' }}
-                          onClick={(ev) => {
-                            ev.stopPropagation();
-                            onEventClick(e);
-                          }}
-                        >
-                          {e.title}
-                        </div>
-                      ))}
-                      {dayEvents.length > 3 && (
-                        <div className="text-[11px] text-text-muted">
-                          +{dayEvents.length - 3} more
+                    <div className="mt-0.5 space-y-px">
+                      {dayEvents.slice(0, maxVisible).map((e, i) => {
+                        const color = e.color || '#4A90D9';
+                        return (
+                          <div
+                            key={i}
+                            className="text-[10px] leading-tight px-1 py-px rounded overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer transition-all duration-150 hover:brightness-125"
+                            style={{
+                              background: `${color}25`,
+                              borderLeft: `2px solid ${color}`,
+                              color: `color-mix(in srgb, ${color} 60%, #ffffff)`,
+                            }}
+                            onClick={(ev) => {
+                              ev.stopPropagation();
+                              onEventClick(e);
+                            }}
+                          >
+                            {e.title}
+                          </div>
+                        );
+                      })}
+                      {dayEvents.length > maxVisible && (
+                        <div className="text-[9px] text-text-muted pl-1">
+                          +{dayEvents.length - maxVisible} more
                         </div>
                       )}
                     </div>

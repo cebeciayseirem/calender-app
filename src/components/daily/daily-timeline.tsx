@@ -28,27 +28,27 @@ export function DailyTimeline({ events, currentDate, onEventClick, onAddEvent }:
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
   return (
-    <div className="flex-1 bg-surface rounded-2xl overflow-y-auto">
-      {/* Header */}
-      <div className="flex items-start justify-between px-6 pt-6 pb-4">
-        <div>
-          <h2 className="text-xl font-bold text-text">
-            {format(currentDate, "EEEE, d MMMM")}
-          </h2>
-          <p className="text-sm text-text-muted mt-0.5">
-            {isToday ? `${remaining} tasks remaining` : `${events.length} events`}
-          </p>
+    <div className="flex-1 flex flex-col">
+      <div className="bg-surface rounded-2xl px-6 pt-6 pb-5 flex-1 overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-start justify-between pb-5">
+          <div>
+            <h2 className="text-xl font-bold text-text">
+              {format(currentDate, "EEEE, d MMMM")}
+            </h2>
+            <p className="text-sm text-text-muted mt-0.5">
+              {isToday ? `${remaining} tasks remaining` : `${events.length} events`}
+            </p>
+          </div>
+          <button
+            onClick={() => onAddEvent(currentDate)}
+            className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-xl transition-colors flex items-center gap-1.5"
+          >
+            <span className="text-lg leading-none">+</span> Add Event
+          </button>
         </div>
-        <button
-          onClick={() => onAddEvent(currentDate)}
-          className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-xl transition-colors flex items-center gap-1.5"
-        >
-          <span className="text-lg leading-none">+</span> Add Event
-        </button>
-      </div>
 
-      {/* Timeline */}
-      <div className="px-6 pb-6">
+        {/* Timeline */}
         {events.length === 0 ? (
           <div
             className="flex items-center justify-center h-48 text-text-muted text-sm cursor-pointer rounded-xl hover:bg-white/[0.03] transition-colors"

@@ -54,7 +54,7 @@ export function NavBar({
   onSearchChange,
 }: NavBarProps) {
   return (
-    <nav className="fixed top-0 left-0 w-full h-[56px] bg-surface/80 backdrop-blur-md border-b border-white/[0.06] flex items-center px-5 z-[500]">
+    <nav className={`fixed top-0 left-0 w-full h-[56px] backdrop-blur-md flex items-center px-5 z-[500] ${view === 'daily' ? 'bg-bg/80 border-b border-transparent' : 'bg-surface/80 border-b border-white/[0.06]'}`}>
       <div className="flex items-center gap-3 flex-1">
         <button
           onClick={onToday}
